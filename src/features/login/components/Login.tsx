@@ -5,9 +5,7 @@ import LoginTitle from './LoginTitle';
 const Login: React.FC = () => {
   return (
     <S.LoginStyle>
-      <div style={{ display: 'flex', padding: '1.2rem' }}>
-        <LoginTitle />
-      </div>
+      <LoginTitle />
     </S.LoginStyle>
   );
 };
