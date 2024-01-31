@@ -57,7 +57,7 @@ export default {
 To **install all dependencies** execute the following command 
 
 ```bash
-  npm install
+  yarn install
 ```
 
 ## <a name="build-and-run">🔨 Build and Run</a>
@@ -65,13 +65,13 @@ To **install all dependencies** execute the following command
 To **build the project** execute the following command
 
 ```bash
-  npm run build
+  yarn run build
 ```
 
 To **run the project** execute the following command
 
 ```bash
-  npm run dev
+  yarn run dev
 ```
 
 ## <a name="tests"> 💯 Tests</a>
