@@ -8,7 +8,7 @@ import React, { Suspense, lazy, useEffect, useState } from 'react';
 import { ThemeProvider as StyledProvider } from 'styled-components';
 import './App.css';
 import './i18n/i18n';
-import { Themes } from './features/shared/shared.consts';
+import { Themes } from './features/shared/Shared.consts';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const Login = lazy(() => import('./features/login/components/Login'));
