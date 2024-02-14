@@ -1,5 +1,5 @@
 import React from 'react';
-import * as S from '../Login.style';
+import * as S from '../login.style';
 import Logo from '../../shared/components/Logo';
 import { Link } from 'react-router-dom';
 import { StateAction } from '../../shared/Shared.types';

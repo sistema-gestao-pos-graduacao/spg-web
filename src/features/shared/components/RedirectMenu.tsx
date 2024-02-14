@@ -4,7 +4,7 @@ import { Button } from '@mui/material';
 import Menu from '@mui/material/Menu';
 import { KeyboardArrowDownOutlined } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
-import { Themes } from '../Shared.consts';
+import { Themes } from '../shared.consts';
 
 const RedirectMenu: React.FC<{
   label: string;

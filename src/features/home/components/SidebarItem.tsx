@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card as S } from '../Home.style';
 import { SidebarCard } from '../Home.types';
-import { Themes } from '../../shared/Shared.consts';
+import { Themes } from '../../shared/shared.consts';
 import { StateAction } from '../../shared/Shared.types';
 import { Link } from 'react-router-dom';
 const SidebarItem: React.FC<{
