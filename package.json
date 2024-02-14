@@ -14,8 +14,8 @@
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
     "@fontsource/roboto": "^5.0.8",
+    "@mui/icons-material": "^5.15.10",
     "@mui/material": "^5.15.6",
-    "@mui/styled-engine": "npm:@mui/styled-engine-sc@latest",
     "@mui/system": "^5.15.6",
     "i18next": "^23.7.18",
     "react": "^18.2.0",
@@ -40,5 +40,10 @@
   },
   "resolutions": {
     "@mui/styled-engine": "npm:@mui/styled-engine-sc@latest"
-  }
+  },
+  "description": "![React](https://img.shields.io/badge/-react-black?style=for-the-badge&logoColor=black&logo=react&color=61DAFB)\r ![TypeScript](https://img.shields.io/badge/-typescript-black?style=for-the-badge&logoColor=white&logo=typescript&color=3178C6)\r ![MUI](https://img.shields.io/badge/-mui-black?style=for-the-badge&logoColor=white&logo=mui&color=007FFF)\r ![Vite](https://img.shields.io/badge/-vite-black?style=for-the-badge&logoColor=white&logo=vite&color=646CFF)\r ![Vite](https://img.shields.io/badge/-eslint-black?style=for-the-badge&logoColor=white&logo=eslint&color=4B32C3)",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }

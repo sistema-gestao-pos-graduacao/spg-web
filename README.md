@@ -38,14 +38,14 @@ If you are developing a production application, we recommend updating the config
 
 ```js
 export default {
-  // other rules...
+  // other rules..
   parserOptions: {
     ecmaVersion: 'latest',
     sourceType: 'module',
     project: ['./tsconfig.json', './tsconfig.node.json'],
     tsconfigRootDir: __dirname,
   },
-}
+};
 ```
 
 - Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
@@ -54,7 +54,7 @@ export default {
 
 ## <a name="installation">✅ Installation</a>
 
-To **install all dependencies** execute the following command 
+To **install all dependencies** execute the following command
 
 ```bash
   yarn install
@@ -79,6 +79,7 @@ To **run the project** execute the following command
 Write about Tests
 
 ## <a name="contributors">❤️ Contributors</a>
+
 - <a href="https://github.com/andrepcarraro">Andre Carraro</a>
 - <a href="https://github.com/Wegxx">Giovanna Nascimento Reis</a>
 - <a href="https://github.com/MateusAbu">Mateus Abu Kamel</a>
