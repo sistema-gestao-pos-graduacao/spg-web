@@ -1,32 +1,22 @@
 import React from 'react';
 import * as S from '../Login.style';
 import Logo from '../../shared/components/Logo';
-import { Link } from 'react-router-dom';
 import { StateAction } from '../../shared/Shared.types';
-import { Button } from '@mui/material';
+
+import { Container } from '@mui/material';
+import LoginCard from './LoginCard';
 
 const Login: React.FC<{ setLogged: StateAction<boolean> }> = ({
   setLogged,
 }) => {
   return (
     <S.LoginStyle>
-      <Logo />
-      <div
-        style={{
-          display: 'flex',
-          width: '100%',
-          justifyContent: 'flex-end',
-          alignItems: 'flex-end',
-        }}
-      >
-        <Button
-          variant="contained"
-          style={{ height: '2rem' }}
-          onClick={() => setLogged(true)}
-        >
-          <Link to={'/'}>Logar</Link>
-        </Button>
-      </div>
+      <S.Background>
+        <Logo />
+        <Container maxWidth="xl" sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', height: '100%' }}>
+          <LoginCard setLogged={setLogged}/>
+        </Container>
+      </S.Background>
     </S.LoginStyle>
   );
 };
