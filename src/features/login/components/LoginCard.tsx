@@ -2,9 +2,13 @@ import { Button, Card, CardActions, CardContent, TextField, Typography, FormCont
 import { Themes } from '../../shared/Shared.consts';
 import { Link } from 'react-router-dom';
 import { LoginCardProps } from '../Login.types';
+import { useTranslation } from 'react-i18next';
 
 
 const LoginCard = ({ setLogged }: LoginCardProps ) => {
+
+  const { t } = useTranslation();
+
   return (
     <Card sx={{
         width: 450,
@@ -16,12 +20,12 @@ const LoginCard = ({ setLogged }: LoginCardProps ) => {
         justifyContent: 'space-between',
         backgroundColor: `${Themes.light_gray}`
         }}>
-      <CardContent sx={{ paddingY: '50px' }}>
+      <CardContent sx={{ paddingY: '50px', marginX: 'auto', color: `${Themes.primary}` }}>
         <Typography variant="h4" component="div">
-          Bem Vindo ao SPG
+          {t('login.TITLE')}
         </Typography>
         <Typography variant="body2">
-          Entre com seu número de matrícula e senha
+          {t('login.SUBTITLE')}
         </Typography>
       </CardContent>
       <CardContent>
@@ -43,8 +47,10 @@ const LoginCard = ({ setLogged }: LoginCardProps ) => {
             />
             <FormControlLabel 
                 control={<Checkbox defaultChecked />} 
-                label="Ao fazer login, você concordo com nossos Termos & Condições" 
-                sx={{ fontSize: 14 }}
+                label={
+                  <Typography variant="caption" sx={{ color: `${Themes.primary}` }}>
+                    {t('login.TERMS')}
+                  </Typography>}
             />
         </FormControl>
       </CardContent>
@@ -56,7 +62,7 @@ const LoginCard = ({ setLogged }: LoginCardProps ) => {
         >
             <Link to={'/'}>
                 <Typography variant="caption">
-                    Login 
+                  {t('login.LOGINBUTTON')}
                 </Typography>
             </Link>
         </Button>
@@ -67,7 +73,7 @@ const LoginCard = ({ setLogged }: LoginCardProps ) => {
         >
             <Link to={'/'}>
                 <Typography variant="caption">
-                    Esqueceu a senha?
+                  {t('login.FORGOTBUTTON')}
                 </Typography>
             </Link>
         </Button>
