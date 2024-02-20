@@ -15,6 +15,7 @@ export const Container = styled.div`
 export const Content = styled.div`
   display: flex;
   width: 100%;
+  justify-content: center;
   height: 100%;
   overflow: auto;
   box-sizing: border-box;
@@ -58,7 +59,7 @@ export const Sidebar = {
     justify-content: space-between;
     align-items: center;
     border-right: 1px solid ${({ theme }) => theme.gray};
-    border-radius: 0 0 20px 0;
+    border-radius: 0 0 1rem 0;
   `,
   Cards: styled.div`
     display: flex;
@@ -112,7 +113,8 @@ export const Card = {
       active ? theme.medium_primary : theme.light_primary};
     align-items: center;
     justify-content: center;
-    border-radius: 20px;
+    border-radius: 1rem;
+    box-shadow: 2px 2px 10px ${({ theme }) => theme.gray};
   `,
   CardLabel: styled.span<{ active: boolean }>`
     font-size: 0.5rem;
