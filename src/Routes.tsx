@@ -21,6 +21,7 @@ const Requirements = lazy(
   () => import('./features/requirements/components/Requirements'),
 );
 const Calendar = lazy(() => import('./features/calendar/components/Calendar'));
+const Schedule = lazy(() => import('./features/schedule/components/Schedule'));
 
 const theme = createTheme({
   palette: {
@@ -52,6 +53,7 @@ const App: React.FC = () => {
             <Route path="/requerimentos" element={<Requirements />} />
             <Route path="/chat" element={<Chat />} />
             <Route path="/calendario" element={<Calendar />} />
+            <Route path="/horarios" element={<Schedule />} />
           </Switch>
         </Home>
       )}
