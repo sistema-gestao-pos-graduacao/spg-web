@@ -32,13 +32,13 @@ const theme = createTheme({
   },
 });
 
-const App: React.FC = ({}) => {
+const App: React.FC = () => {
   const [logged, setLogged] = useState<boolean>(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!logged) navigate('/login');
-  }, [logged]);
+  }, [logged, navigate]);
 
   return (
     <main>
