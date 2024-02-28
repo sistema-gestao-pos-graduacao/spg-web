@@ -1,5 +1,6 @@
 const PtBr = {
-  TITLE: 'CALENDÁRIO',
+  TITLE: 'HORÁRIOS',
+  SAVE: 'Salvar',
 };
 
 export default PtBr;

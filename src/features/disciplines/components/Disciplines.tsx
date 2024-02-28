@@ -1,5 +1,5 @@
 import React from 'react';
-import { DisciplinesContainer as S } from '../Disciplines.style';
+import { MainScreen } from '../../shared/Shared.style';
 import Folder from './Folder';
 import { Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
@@ -132,16 +132,18 @@ const Disciplines: React.FC = () => {
   ];
 
   return (
-    <S.Container>
-      <Typography color={Themes.primary}>
-        {t('disciplines.DISCIPLINES')}
-      </Typography>
-      <S.Content>
+    <MainScreen.Container>
+      <MainScreen.Title>
+        <Typography color={Themes.primary}>
+          {t('disciplines.DISCIPLINES')}
+        </Typography>
+      </MainScreen.Title>
+      <MainScreen.Content>
         {disciplines.map((discipline) => (
           <Folder discipline={discipline} />
         ))}
-      </S.Content>
-    </S.Container>
+      </MainScreen.Content>
+    </MainScreen.Container>
   );
 };
 

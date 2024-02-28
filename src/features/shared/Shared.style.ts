@@ -23,3 +23,32 @@ export const LogoStyle = {
     color: ${({ theme }) => theme.medium_primary};
   `,
 };
+
+export const MainScreen = {
+  Container: styled.div`
+    display: flex;
+    flex-direction: column;
+    margin: 1rem;
+    background-color: white;
+    border-radius: 1.5rem;
+    padding: 0.5rem 1rem;
+    width: 100%;
+  `,
+  Content: styled.div`
+    display: flex;
+    align-content: flex-start;
+    flex-wrap: wrap;
+    flex: 1;
+    margin-top: 0.5rem;
+    background-color: ${({ theme }) => theme.white};
+    gap: 1rem;
+    overflow: auto;
+    max-width: 1800px;
+  `,
+  Title: styled.span`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 2.5rem;
+  `,
+};

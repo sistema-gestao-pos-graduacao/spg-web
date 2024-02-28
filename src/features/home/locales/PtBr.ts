@@ -10,6 +10,7 @@ const PtBr = {
   PARTNERSHIPS: 'Parcerias',
   RESUMES: 'Currículos',
   CONTACT: 'Contato',
+  SCHEDULE: 'Horários',
 };
 
 export default PtBr;

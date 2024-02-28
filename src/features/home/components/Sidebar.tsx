@@ -4,6 +4,7 @@ import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import EditNoteOutlinedIcon from '@mui/icons-material/EditNoteOutlined';
 import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
 import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined';
+import LockClockOutlined from '@mui/icons-material/LockClockOutlined';
 import { SidebarCard } from '../Home.types';
 import SidebarItem from './SidebarItem';
 import { useTranslation } from 'react-i18next';
@@ -34,6 +35,11 @@ const Sidebar: React.FC = () => {
       label: t('home.CALENDAR'),
       icon: CalendarMonthOutlinedIcon,
       route: '/calendario',
+    },
+    {
+      label: t('home.SCHEDULE'),
+      icon: LockClockOutlined,
+      route: '/horarios',
     },
   ];
 
