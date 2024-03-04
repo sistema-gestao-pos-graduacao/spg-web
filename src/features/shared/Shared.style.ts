@@ -52,3 +52,16 @@ export const MainScreen = {
     height: 2.5rem;
   `,
 };
+
+export const CircularLoadingContent = styled.div`
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  align-items: center;
+  justify-content: center;
+
+  span {
+    width: 8rem !important;
+    height: 8rem !important;
+  }
+`;

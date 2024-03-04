@@ -10,6 +10,7 @@ import './App.css';
 import './i18n/i18n';
 import { Themes } from './features/shared/Shared.consts';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import CircularLoading from './features/shared/components/CircularLoading';
 
 const Login = lazy(() => import('./features/login/components/Login'));
 const Home = lazy(() => import('./features/home/components/Home'));
@@ -64,7 +65,7 @@ const App: React.FC = () => {
 const Routes: React.FC = () => {
   return (
     <BrowserRouter>
-      <Suspense fallback={<span>Caregando..</span>}>
+      <Suspense fallback={<CircularLoading />}>
         <ThemeProvider theme={theme}>
           <StyledProvider theme={Themes}>
             <App />
