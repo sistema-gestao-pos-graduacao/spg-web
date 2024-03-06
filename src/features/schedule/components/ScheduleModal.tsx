@@ -7,6 +7,8 @@ import { Modal as S } from '../Schedule.style';
 import { Themes } from '../../shared/Shared.consts';
 import { Button } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 const ScheduleModal: React.FC<{
   setOpen: StateAction<boolean>;
@@ -14,7 +16,6 @@ const ScheduleModal: React.FC<{
   currentEvent: EventProps | null;
 }> = ({ setOpen, open, currentEvent }) => {
   const { t } = useTranslation();
-
   return (
     <Modal
       open={open}
@@ -46,10 +47,21 @@ const ScheduleModal: React.FC<{
           </Typography>
         </S.Header>
         <S.Content>
-          <S.field>
-            <Typography fontWeight={700}>Professor:</Typography>
-            <Typography>Renata</Typography>
-          </S.field>
+          <span>
+            <S.field>
+              <Typography fontWeight={700}>{t('schedule.TEACHER')}</Typography>
+              <Typography>{currentEvent?.teacher}</Typography>
+            </S.field>
+            <S.field>
+              <Typography fontWeight={700}>{t('schedule.TIME')}</Typography>
+              <Typography sx={{ textTransform: 'capitalize' }}>
+                {`${format(currentEvent?.start || new Date(), 'EEEE', { locale: ptBR })}
+                 (${format(currentEvent?.start || new Date(), 'hh:mm')}
+                 - ${format(currentEvent?.end || new Date(), 'hh:mm')})
+                 `}
+              </Typography>
+            </S.field>
+          </span>
           <Button
             style={{ borderRadius: '1.5rem', width: 'auto' }}
             size="small"

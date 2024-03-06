@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { Themes } from './../shared/Shared.consts';
 
 export const ScheduledTable = {
   Content: styled.div`
@@ -28,3 +29,16 @@ export const Modal = {
     gap: 0.2rem;
   `,
 };
+
+export const CalendarContainer = styled.span`
+  height: 100%;
+  width: 100%;
+  padding: 0 1rem 1rem 0;
+
+  .rbc-header {
+    color: ${Themes.primary};
+    padding: 1.2rem 0 !important;
+    text-transform: capitalize;
+    font-size: 1rem;
+  }
+`;

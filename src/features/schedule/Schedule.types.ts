@@ -5,5 +5,5 @@ export interface EventProps {
   end: stringOrDate;
   title: string;
   color: string;
-  selectable: boolean;
+  teacher: string;
 }

@@ -9,7 +9,9 @@ const Calendar: React.FC = () => {
   return (
     <MainScreen.Container>
       <MainScreen.Title>
-        <Typography color="primary">{t('calendar.TITLE')}</Typography>
+        <Typography fontWeight={700} color="primary">
+          {t('calendar.TITLE')}
+        </Typography>
       </MainScreen.Title>
       <MainScreen.Content>
         <img src={calendar_2024} width={'100%'} />

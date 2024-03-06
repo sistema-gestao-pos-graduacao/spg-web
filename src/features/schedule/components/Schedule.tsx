@@ -10,7 +10,9 @@ const Chat: React.FC = () => {
   return (
     <MainScreen.Container>
       <MainScreen.Title>
-        <Typography color="primary">{t('schedule.TITLE')}</Typography>
+        <Typography fontWeight={700} color="primary">
+          {t('schedule.TITLE')}
+        </Typography>
         <Button
           style={{ borderRadius: '1.5rem' }}
           size="small"

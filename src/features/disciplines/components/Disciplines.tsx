@@ -134,7 +134,7 @@ const Disciplines: React.FC = () => {
   return (
     <MainScreen.Container>
       <MainScreen.Title>
-        <Typography color={Themes.primary}>
+        <Typography fontWeight={700} color={Themes.primary}>
           {t('disciplines.DISCIPLINES')}
         </Typography>
       </MainScreen.Title>
