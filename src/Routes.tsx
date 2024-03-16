@@ -30,6 +30,9 @@ const theme = createTheme({
       main: '#074458',
       light: '#074458AB',
     },
+    action: {
+      active: '#FFFFFF',
+    },
   },
 });
 

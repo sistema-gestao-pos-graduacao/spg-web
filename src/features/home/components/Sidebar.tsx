@@ -48,8 +48,9 @@ const Sidebar: React.FC = () => {
       <S.Cards>
         {sidebarItens.map((item, index) => (
           <SidebarItem
+            key={item.label}
             item={item}
-            active={index === activeItem}
+            active={!!(index === activeItem)}
             index={index}
             setActive={setActiveItem}
           />

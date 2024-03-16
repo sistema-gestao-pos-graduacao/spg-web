@@ -32,15 +32,15 @@ const Navbar: React.FC<{ setLogged: StateAction<boolean> }> = ({
         />
         <RedirectMenu
           label={t('home.PARTNERSHIPS')}
-          listItems={['1', '2', '3', '4']}
+          listItems={['5', '6', '7', '8']}
         />
         <RedirectMenu
           label={t('home.RESUMES')}
-          listItems={['1', '2', '3', '4']}
+          listItems={['9', '10', '11', '12']}
         />
         <RedirectMenu
           label={t('home.CONTACT')}
-          listItems={['1', '2', '3', '4']}
+          listItems={['13', '14', '15', '16']}
         />
       </S.Menu>
       <S.User>

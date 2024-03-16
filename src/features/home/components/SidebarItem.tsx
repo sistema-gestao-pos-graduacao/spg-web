@@ -13,14 +13,14 @@ const SidebarItem: React.FC<{
   return (
     <Link to={item.route}>
       <S.CardContainer onClick={() => setActive(index)}>
-        <S.CardIcon active={active}>
+        <S.CardIcon $active={active}>
           {React.createElement(item.icon, {
             style: {
               fill: active ? Themes.primary : Themes.light_primary,
             },
           })}
         </S.CardIcon>
-        <S.CardLabel active={active}>{item.label}</S.CardLabel>
+        <S.CardLabel $active={active}>{item.label}</S.CardLabel>
       </S.CardContainer>
     </Link>
   );

@@ -24,9 +24,9 @@ const Folder: React.FC<{
 
   return (
     <S.Container>
-      <S.Left cardColor={color} />
-      <S.Upper cardColor={color} />
-      <S.Content cardColor={color}>
+      <S.Left $cardColor={color} />
+      <S.Upper $cardColor={color} />
+      <S.Content $cardColor={color}>
         <Typography>{discipline.discipline}</Typography>
         <span>
           <S.fieldText>
