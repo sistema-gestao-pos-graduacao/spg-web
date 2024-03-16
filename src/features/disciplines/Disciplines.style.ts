@@ -15,7 +15,7 @@ export const Folder = {
     }
   `,
 
-  Content: styled.div<{ cardColor: string }>`
+  Content: styled.div<{ $cardColor: string }>`
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -23,14 +23,14 @@ export const Folder = {
     bottom: 0;
     height: 85%;
     width: 100%;
-    background-color: ${({ cardColor }) => cardColor};
+    background-color: ${({ $cardColor }) => $cardColor};
     border-radius: 1.5rem 0 0 0;
     padding: 0.8rem;
     z-index: 1;
     color: ${({ theme }) => theme.white};
   `,
 
-  Upper: styled.div<{ cardColor: string }>`
+  Upper: styled.div<{ $cardColor: string }>`
     display: flex;
     position: absolute;
     top: 0;
@@ -39,10 +39,10 @@ export const Folder = {
     width: 90%;
     border-radius: 1.5rem 0 0 0;
     opacity: 0.5;
-    background-color: ${({ cardColor }) => cardColor};
+    background-color: ${({ $cardColor }) => $cardColor};
   `,
 
-  Left: styled.div<{ cardColor: string }>`
+  Left: styled.div<{ $cardColor: string }>`
     display: flex;
     clip-path: polygon(56% 0, 100% 0%, 100% 100%, 40% 100%);
     position: absolute;
@@ -53,7 +53,7 @@ export const Folder = {
     background-color: color;
     border-radius: 1.5rem 0 0 0;
     z-index: 1;
-    background-color: ${({ cardColor }) => cardColor};
+    background-color: ${({ $cardColor }) => $cardColor};
   `,
 
   fieldText: styled.span`

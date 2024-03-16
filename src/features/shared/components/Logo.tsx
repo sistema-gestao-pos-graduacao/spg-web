@@ -10,16 +10,15 @@ const Logo: React.FC<{
 }> = ({ lineHeight, position, subTitleSize, titleSize }) => {
   const { t } = useTranslation();
   return (
-    <S.Content position={position}>
-      <S.Title titleSize={titleSize} lineHeight={lineHeight}>
-        {' '}
+    <S.Content $position={position}>
+      <S.Title $titleSize={titleSize} $lineHeight={lineHeight}>
         {t('shared.TITLE')}
       </S.Title>
       <S.SubtitleContent>
-        <S.Subtitle subTitleSize={subTitleSize}>
+        <S.Subtitle $subTitleSize={subTitleSize}>
           {t('shared.SUBTITLE_PRIMARY')}
         </S.Subtitle>
-        <S.Subtitle subTitleSize={subTitleSize}>
+        <S.Subtitle $subTitleSize={subTitleSize}>
           {t('shared.SUBTITLE_SECONDARY')}
         </S.Subtitle>
       </S.SubtitleContent>

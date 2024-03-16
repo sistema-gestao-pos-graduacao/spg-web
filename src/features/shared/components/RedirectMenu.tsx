@@ -35,7 +35,7 @@ const RedirectMenu: React.FC<{
         onClose={handleClose}
       >
         {listItems.map((item) => (
-          <Link to={item} style={{ color: Themes.medium_primary }}>
+          <Link key={item} to={item} style={{ color: Themes.medium_primary }}>
             <MenuItem value={item}>{item}</MenuItem>
           </Link>
         ))}

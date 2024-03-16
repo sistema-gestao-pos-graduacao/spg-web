@@ -1,18 +1,25 @@
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Calendar, Event, dateFnsLocalizer } from 'react-big-calendar';
 import withDragAndDrop, {
+  DragFromOutsideItemArgs,
   EventInteractionArgs,
 } from 'react-big-calendar/lib/addons/dragAndDrop';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { EventProps } from './../Schedule.types';
 import ScheduleModal from './ScheduleModal';
-import { CalendarContainer } from './../Schedule.style';
+import {
+  CalendarContainer,
+  EventItem,
+  EventItemContent,
+  RemoveEventButton,
+} from './../Schedule.style';
 import moment from 'moment';
 import 'moment/locale/pt-br';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { CalendarTranlates } from '../Schedule.consts';
+import { StateAction } from '../../shared/Shared.types';
+import CloseIcon from '@mui/icons-material/Close';
 
 const locales = {
   'pt-BR': ptBR,
@@ -27,26 +34,23 @@ const localizer = dateFnsLocalizer({
 });
 const DnDCalendar = withDragAndDrop(Calendar);
 
-const ScheduleTable: React.FC = () => {
-  const { t } = useTranslation();
+const ScheduleTable: React.FC<{
+  events: EventProps[];
+  setEvents: StateAction<EventProps[]>;
+  manualEvents: Partial<EventProps>[];
+  setManualEvents: StateAction<Partial<EventProps>[]>;
+  externalEvents: Partial<EventProps> | null;
+  setExternalEvents: StateAction<Partial<EventProps> | null>;
+}> = ({
+  events,
+  setEvents,
+  manualEvents,
+  setManualEvents,
+  externalEvents,
+  setExternalEvents,
+}) => {
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [currentEvent, setCurrentEvent] = useState<EventProps | null>(null);
-  const [events, setEvents] = useState<EventProps[]>([
-    {
-      start: new Date('2024/03/04 17:10'),
-      end: new Date('2024/03/04 18:50'),
-      title: '12345.01 - Controle de Processos',
-      color: '#580707',
-      teacher: 'Renata',
-    },
-    {
-      start: new Date('2024/03/05 20:50'),
-      end: new Date('2024/03/05 22:30'),
-      title: '54321.01 - Informatica Industrial',
-      color: '#07581E',
-      teacher: 'Luis',
-    },
-  ]);
 
   const onEventDrop = (data: EventInteractionArgs<object>) => {
     const { start, end, event } = data;
@@ -65,16 +69,63 @@ const ScheduleTable: React.FC = () => {
     ]);
   };
 
+  const SelectEvent = (event: Event) => {
+    setCurrentEvent(event as EventProps);
+    setOpenModal(true);
+  };
+
+  const onDropFromOutsideEvent = (data: DragFromOutsideItemArgs) => {
+    const { start } = data;
+    const hours = new Date(start).getHours();
+    const min = new Date(start).getMinutes();
+
+    let endDate = new Date(start).setHours(hours + 2);
+    endDate = new Date(endDate).setMinutes(min - 20);
+
+    setEvents((prev) => [
+      ...prev,
+      {
+        ...externalEvents,
+        start: new Date(start),
+        end: new Date(endDate),
+      } as EventProps,
+    ]);
+    setExternalEvents(null);
+    setManualEvents(
+      manualEvents.filter(
+        (item) => JSON.stringify(item) !== JSON.stringify(externalEvents),
+      ),
+    );
+  };
+
+  const removeEvent = (event: EventProps) => {
+    const { color, title, teacher } = event;
+
+    setManualEvents((prev) => [...prev, { color, title, teacher }]);
+    setEvents((prev) =>
+      prev.filter((e) => JSON.stringify(e) !== JSON.stringify(event)),
+    );
+  };
+
   const eventStyleGetter = (event: Event) => {
     return {
       style: { backgroundColor: (event as EventProps).color },
     };
   };
 
-  const SelectEvent = (event: Event) => {
-    setCurrentEvent(event as EventProps);
-    setOpenModal(true);
-  };
+  const CustomEventRow = ({ event }: { event: Event }) => (
+    <EventItem>
+      <EventItemContent onClick={() => SelectEvent(event)}>
+        {event.title}
+      </EventItemContent>
+      <RemoveEventButton onClick={() => removeEvent(event as EventProps)}>
+        <CloseIcon
+          color="action"
+          style={{ height: '1.2rem', width: '1.2rem' }}
+        />
+      </RemoveEventButton>
+    </EventItem>
+  );
 
   return (
     <CalendarContainer>
@@ -85,17 +136,24 @@ const ScheduleTable: React.FC = () => {
         events={events}
         localizer={localizer}
         onEventDrop={onEventDrop}
-        resizable
         eventPropGetter={eventStyleGetter}
-        onSelectEvent={SelectEvent}
-        selectable
+        resizable
         culture="pt-BR"
+        onDropFromOutside={onDropFromOutsideEvent}
+        components={{
+          event: ({ event }) => <CustomEventRow event={event} />,
+        }}
+        views={['month', 'day', 'agenda']}
+        step={10}
+        timeslots={6}
       />
-      <ScheduleModal
-        open={openModal}
-        setOpen={setOpenModal}
-        currentEvent={currentEvent}
-      />
+      {currentEvent && (
+        <ScheduleModal
+          open={openModal}
+          setOpen={setOpenModal}
+          currentEvent={currentEvent}
+        />
+      )}
     </CalendarContainer>
   );
 };

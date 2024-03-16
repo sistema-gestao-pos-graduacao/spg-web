@@ -105,21 +105,21 @@ export const Card = {
       }
     }
   `,
-  CardIcon: styled.span<{ active: boolean }>`
+  CardIcon: styled.span<{ $active: boolean }>`
     display: flex;
     width: 2.8rem;
     height: 2.8rem;
-    background-color: ${({ active, theme }) =>
-      active ? theme.medium_primary : theme.light_primary};
+    background-color: ${({ $active, theme }) =>
+      $active ? theme.medium_primary : theme.light_primary};
     align-items: center;
     justify-content: center;
     border-radius: 1rem;
     box-shadow: 2px 2px 10px ${({ theme }) => theme.gray};
   `,
-  CardLabel: styled.span<{ active: boolean }>`
+  CardLabel: styled.span<{ $active: boolean }>`
     font-size: 0.5rem;
     font-weight: 700;
-    color: ${({ active, theme }) =>
-      active ? theme.medium_primary : theme.light_primary};
+    color: ${({ $active, theme }) =>
+      $active ? theme.medium_primary : theme.light_primary};
   `,
 };

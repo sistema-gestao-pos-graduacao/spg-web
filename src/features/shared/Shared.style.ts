@@ -1,14 +1,14 @@
 import styled from 'styled-components';
 
 export const LogoStyle = {
-  Content: styled.span<{ position?: string }>`
+  Content: styled.span<{ $position?: string }>`
     display: flex;
-    position: ${({ position }) => position ?? 'absolute'};
+    position: ${({ $position }) => $position ?? 'absolute'};
     align-items: flex-end;
   `,
-  Title: styled.span<{ titleSize?: string; lineHeight?: string }>`
-    line-height: ${({ lineHeight }) => lineHeight ?? '4rem'};
-    font-size: ${({ titleSize }) => titleSize ?? '4.7rem'};
+  Title: styled.span<{ $titleSize?: string; $lineHeight?: string }>`
+    line-height: ${({ $lineHeight }) => $lineHeight ?? '4rem'};
+    font-size: ${({ $titleSize }) => $titleSize ?? '4.7rem'};
     font-weight: 700;
     color: ${({ theme }) => theme.primary};
   `,
@@ -17,8 +17,8 @@ export const LogoStyle = {
     flex-direction: column;
     text-align: center;
   `,
-  Subtitle: styled.span<{ subTitleSize?: string }>`
-    font-size: ${({ subTitleSize }) => subTitleSize ?? '0.5rem'};
+  Subtitle: styled.span<{ $subTitleSize?: string }>`
+    font-size: ${({ $subTitleSize }) => $subTitleSize ?? '0.5rem'};
     font-weight: 700;
     color: ${({ theme }) => theme.medium_primary};
   `,
@@ -32,7 +32,7 @@ export const MainScreen = {
     background-color: white;
     border-radius: 1.5rem;
     padding: 0.5rem 1rem;
-    width: 100%;
+    flex: 1;
   `,
   Content: styled.div`
     display: flex;

@@ -13,7 +13,7 @@ import { ptBR } from 'date-fns/locale';
 const ScheduleModal: React.FC<{
   setOpen: StateAction<boolean>;
   open: boolean;
-  currentEvent: EventProps | null;
+  currentEvent: EventProps;
 }> = ({ setOpen, open, currentEvent }) => {
   const { t } = useTranslation();
   return (
@@ -41,7 +41,7 @@ const ScheduleModal: React.FC<{
           overflow: 'hidden',
         }}
       >
-        <S.Header backgrounColor={currentEvent?.color ?? Themes.primary}>
+        <S.Header $backgrounColor={currentEvent?.color ?? Themes.primary}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
             {currentEvent?.title}
           </Typography>
@@ -56,8 +56,8 @@ const ScheduleModal: React.FC<{
               <Typography fontWeight={700}>{t('schedule.TIME')}</Typography>
               <Typography sx={{ textTransform: 'capitalize' }}>
                 {`${format(currentEvent?.start || new Date(), 'EEEE', { locale: ptBR })}
-                 (${format(currentEvent?.start || new Date(), 'hh:mm')}
-                 - ${format(currentEvent?.end || new Date(), 'hh:mm')})
+                 (${format(currentEvent?.start || new Date(), 'HH:mm')}
+                 - ${format(currentEvent?.end || new Date(), 'HH:mm')})
                  `}
               </Typography>
             </S.field>
