@@ -9,6 +9,7 @@ import {
   Checkbox,
   FormControlLabel,
 } from '@mui/material';
+import { useMutation } from "react-query";
 import { Themes } from '../../shared/Shared.consts';
 import { Link, useNavigate } from 'react-router-dom';
 import { FormValues, LoginCardProps } from '../Login.types';
@@ -21,18 +22,39 @@ const LoginCard = ({ setLogged }: LoginCardProps) => {
   const {
     handleSubmit,
     register,
+    watch,
     formState: { errors },
   } = useForm<FormValues>({
     defaultValues: {
-      login: '',
+      username: '',
       password: '',
     },
   });
 
+  const {
+    mutate: loginMutation,
+    isLoading: isLoadingLogin,
+    data: LoginData,
+  } = useMutation(() =>
+    fetch('http://localhost:5195/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        "username": watch('username'),
+        "password": btoa(watch('password'))
+      }),
+    }).then((res) => res.json())
+  );
+
   const onSubmit: SubmitHandler<FormValues> = (data) => {
-    if (data.login || data.password) {
-      setLogged(true);
-      navigate('/');
+    if (data.username && data.password) {
+      try {
+        loginMutation();
+        setLogged(true);
+        navigate('/');
+      } catch (error) {
+        console.error('Login error:', error);
+      }
     }
   };
 
@@ -63,12 +85,12 @@ const LoginCard = ({ setLogged }: LoginCardProps) => {
         <CardContent>
           <FormControl sx={{ width: '100%' }}>
             <TextField
-              label="Login"
+              label="Username"
               type="text"
-              {...register('login', { required: 'Login is required' })}
+              {...register('username', { required: 'Username is required' })}
               style={{ paddingBottom: 10 }}
-              helperText={errors.login?.message}
-              error={!!errors.login?.message}
+              helperText={errors.username?.message}
+              error={!!errors.username?.message}
             />
             <TextField
               label="Password"
@@ -110,6 +132,7 @@ const LoginCard = ({ setLogged }: LoginCardProps) => {
           <Button
             variant="contained"
             style={{ height: '2rem', width: '50%', borderRadius: 20 }}
+            disabled={isLoadingLogin}
             onClick={() => setLogged(true)}
           >
             <Link to={'/'}>

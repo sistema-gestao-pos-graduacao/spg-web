@@ -5,6 +5,6 @@ export type LoginCardProps = {
 }
 
 export type FormValues = {
-    login: string
+    username: string
     password: string
   }
