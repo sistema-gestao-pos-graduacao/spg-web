@@ -15,6 +15,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FormValues, LoginCardProps } from '../Login.types';
 import { useTranslation } from 'react-i18next';
 import { useForm, SubmitHandler } from 'react-hook-form';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const LoginCard = ({ setLogged }: LoginCardProps) => {
   const navigate = useNavigate();
@@ -33,25 +34,25 @@ const LoginCard = ({ setLogged }: LoginCardProps) => {
 
   const {
     mutate: loginMutation,
-    isLoading: isLoadingLogin,
-    data: LoginData,
+    isLoading: isLoadingLogin
   } = useMutation(() =>
-    fetch('http://localhost:5195/api/login', {
+    fetch('https://app-i575ajhit22gu.azurewebsites.net/api/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         "username": watch('username'),
         "password": btoa(watch('password'))
       }),
-    }).then((res) => res.json())
+    }).then((res) => {
+      setLogged(res.ok);
+      navigate('/');
+    })
   );
 
   const onSubmit: SubmitHandler<FormValues> = (data) => {
     if (data.username && data.password) {
       try {
         loginMutation();
-        setLogged(true);
-        navigate('/');
       } catch (error) {
         console.error('Login error:', error);
       }
@@ -127,7 +128,10 @@ const LoginCard = ({ setLogged }: LoginCardProps) => {
             style={{ height: '2rem', width: '50%', borderRadius: 20 }}
             type="submit"
           >
-            <Typography variant="caption">{t('login.LOGINBUTTON')}</Typography>
+            { isLoadingLogin ? 
+              <CircularProgress size={24} /> : 
+              <Typography variant="caption">{t('login.LOGINBUTTON')}</Typography>
+            }
           </Button>
           <Button
             variant="contained"
