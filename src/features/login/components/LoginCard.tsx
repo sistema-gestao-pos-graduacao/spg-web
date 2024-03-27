@@ -128,10 +128,10 @@ const LoginCard = ({ setLogged }: LoginCardProps) => {
             style={{ height: '2rem', width: '50%', borderRadius: 20 }}
             type="submit"
           >
-            { isLoadingLogin ? 
-              <CircularProgress size={24} /> : 
-              <Typography variant="caption">{t('login.LOGINBUTTON')}</Typography>
+            { isLoadingLogin && 
+              <CircularProgress size={24} color='primary'/>
             }
+            <Typography variant="caption">{t('login.LOGINBUTTON')}</Typography>
           </Button>
           <Button
             variant="contained"
