@@ -33,7 +33,7 @@ const LoginCard = ({ setLogged }: LoginCardProps) => {
   });
 
   const { mutate: loginMutation, isLoading: isLoadingLogin } = useMutation(() =>
-    fetch('https://localhost:44392/api/login', {
+    fetch('https://app-i575ajhit22gu.azurewebsites.net/api/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
