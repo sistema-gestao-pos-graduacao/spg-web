@@ -9,7 +9,7 @@ import {
   Checkbox,
   FormControlLabel,
 } from '@mui/material';
-import { useMutation } from "react-query";
+import { useMutation } from 'react-query';
 import { Themes } from '../../shared/Shared.consts';
 import { Link, useNavigate } from 'react-router-dom';
 import { FormValues, LoginCardProps } from '../Login.types';
@@ -32,21 +32,18 @@ const LoginCard = ({ setLogged }: LoginCardProps) => {
     },
   });
 
-  const {
-    mutate: loginMutation,
-    isLoading: isLoadingLogin
-  } = useMutation(() =>
+  const { mutate: loginMutation, isLoading: isLoadingLogin } = useMutation(() =>
     fetch('https://app-i575ajhit22gu.azurewebsites.net/api/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        "username": watch('username'),
-        "password": btoa(watch('password'))
+        username: watch('username'),
+        password: btoa(watch('password')),
       }),
     }).then((res) => {
       setLogged(res.ok);
       navigate('/');
-    })
+    }),
   );
 
   const onSubmit: SubmitHandler<FormValues> = (data) => {
@@ -65,14 +62,15 @@ const LoginCard = ({ setLogged }: LoginCardProps) => {
     <form onSubmit={handleSubmit(onSubmit)}>
       <Card
         sx={{
-          width: 450,
-          height: 550,
-          borderRadius: '20px',
-          paddingX: '15px',
+          width: '27rem',
+          height: '35rem',
+          paddingX: '1rem',
+          borderRadius: '1.5rem',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
           backgroundColor: `${Themes.light_gray}`,
+          marginRight: '2.5rem',
         }}
       >
         <CardContent
@@ -125,12 +123,17 @@ const LoginCard = ({ setLogged }: LoginCardProps) => {
         >
           <Button
             variant="contained"
-            style={{ height: '2rem', width: '50%', borderRadius: 20 }}
+            style={{
+              height: '2rem',
+              width: '50%',
+              borderRadius: '1rem',
+              gap: '.5rem',
+            }}
             type="submit"
           >
-            { isLoadingLogin && 
-              <CircularProgress size={24} color='primary'/>
-            }
+            {isLoadingLogin && (
+              <CircularProgress size={'1rem'} color="secondary" />
+            )}
             <Typography variant="caption">{t('login.LOGINBUTTON')}</Typography>
           </Button>
           <Button

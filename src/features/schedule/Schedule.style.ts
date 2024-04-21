@@ -76,12 +76,15 @@ export const CalendarContainer = styled.span`
   .rbc-event-label {
     margin-bottom: 0.2rem;
   }
+
+  .rbc-allday-cell {
+    display: none;
+  }
 `;
 
 export const DisciplinesStyled = {
   Container: styled.span`
     display: flex;
-    width: 25%;
     flex-direction: column;
     margin: 1rem 1rem 1rem 0;
     background-color: white;
@@ -122,6 +125,8 @@ export const DisciplineList = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
+  overflow-y: auto;
+  padding-right: 0.5rem;
 `;
 
 export const ModalTimeDiscipline = styled.input`
@@ -130,4 +135,12 @@ export const ModalTimeDiscipline = styled.input`
   &:focus-visible {
     outline: none;
   }
+`;
+export const ScheduledContent = styled.div<{ $isTeacher: boolean }>`
+  display: ${({ $isTeacher }) => ($isTeacher ? 'flex' : 'grid')};
+  grid-template-columns: minmax(0, 1fr) 0.2fr;
+  flex: 1;
+  max-height: 100%;
+  grid-auto-rows: 1fr;
+  column-gap: 2rem;
 `;

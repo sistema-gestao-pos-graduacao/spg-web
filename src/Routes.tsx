@@ -11,6 +11,7 @@ import './i18n/i18n';
 import { Themes } from './features/shared/Shared.consts';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CircularLoading from './features/shared/components/CircularLoading';
+import DisciplinesDetails from './features/disciplines/components/DisciplinesDetails';
 
 const Login = lazy(() => import('./features/login/components/Login'));
 const Home = lazy(() => import('./features/home/components/Home'));
@@ -30,8 +31,8 @@ const theme = createTheme({
       main: '#074458',
       light: '#074458AB',
     },
-    action: {
-      active: '#FFFFFF',
+    secondary: {
+      main: '#FFFFFF',
     },
   },
 });
@@ -54,6 +55,7 @@ const App: React.FC = () => {
         <Home setLogged={setLogged}>
           <Switch>
             <Route path="/" element={<Disciplines />} />
+            <Route path="/disciplina/:id" element={<DisciplinesDetails />} />
             <Route path="/requerimentos" element={<Requirements />} />
             <Route path="/chat" element={<Chat />} />
             <Route path="/calendario" element={<Calendar />} />

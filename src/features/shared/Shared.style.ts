@@ -32,7 +32,8 @@ export const MainScreen = {
     background-color: white;
     border-radius: 1.5rem;
     padding: 0.5rem 1rem;
-    flex: 1;
+    overflow: auto;
+    width: 100%;
   `,
   Content: styled.div`
     display: flex;
@@ -63,5 +64,14 @@ export const CircularLoadingContent = styled.div`
   span {
     width: 8rem !important;
     height: 8rem !important;
+  }
+`;
+
+export const AccordionContent = styled.div`
+  .Mui-expanded {
+    min-height: unset;
+  }
+  .MuiAccordionSummary-content {
+    margin: 0.6rem 0 0 0;
   }
 `;

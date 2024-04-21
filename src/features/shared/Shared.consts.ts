@@ -6,3 +6,8 @@ export const Themes = {
   gray: '#C2BEBE',
   light_gray: '#E4E4E4',
 };
+
+export const ModeScreens = {
+  COORDINATOR: 'coordinator',
+  TEACHER: 'teacher',
+};
