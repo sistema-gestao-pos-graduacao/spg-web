@@ -36,6 +36,7 @@ const LoginCard = ({ setLogged }: LoginCardProps) => {
     fetch('https://app-i575ajhit22gu.azurewebsites.net/api/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({
         username: watch('username'),
         password: btoa(watch('password')),
