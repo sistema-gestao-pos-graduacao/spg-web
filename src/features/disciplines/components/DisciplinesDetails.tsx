@@ -32,7 +32,7 @@ const DisciplinesDetails: React.FC = () => {
 
       considerations: null,
       students: null,
-      courseProgram: null,
+      curriculum: null,
     }),
     [],
   );

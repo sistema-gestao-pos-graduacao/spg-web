@@ -14,7 +14,7 @@ export interface DisciplineForm {
 
   considerations: string | null;
   students: string | null;
-  courseProgram: string | null;
+  curriculum: string | null;
 }
 
 export interface FormDataProps {

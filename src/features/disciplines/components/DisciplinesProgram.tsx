@@ -22,7 +22,7 @@ const DisciplinesProgram: React.FC<{
       <S.TextArea
         $possibleEdit={possibleEdit}
         disabled={!possibleEdit}
-        {...register('courseProgram')}
+        {...register('curriculum')}
       />
     </S.ProgramContainer>
   );
