@@ -28,10 +28,10 @@ jobs:
         with: 
           node-version: ${{ env.NODE_VERSION }}
           cache: 'yarn'
-      - name: npm install, build, and test
+      - name: Yarn install, build, and test
         run: |
             yarn install
-            yaen run build
+            yarn run build
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
