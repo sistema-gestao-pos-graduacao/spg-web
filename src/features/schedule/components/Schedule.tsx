@@ -11,7 +11,7 @@ import { ScheduledContent } from '../Schedule.style';
 const Chat: React.FC = () => {
   const { t } = useTranslation();
 
-  const mode: string = ModeScreens.TEACHER;
+  const mode: string = ModeScreens.COORDINATOR;
 
   const [externalEvents, setExternalEvents] =
     useState<Partial<EventProps> | null>(null);
