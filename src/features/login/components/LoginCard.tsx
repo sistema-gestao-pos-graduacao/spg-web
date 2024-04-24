@@ -16,6 +16,7 @@ import { FormValues, LoginCardProps } from '../Login.types';
 import { useTranslation } from 'react-i18next';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import CircularProgress from '@mui/material/CircularProgress';
+import { LOGIN_ROUTE } from '../../shared/Routes';
 
 const LoginCard = ({ setLogged }: LoginCardProps) => {
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ const LoginCard = ({ setLogged }: LoginCardProps) => {
   });
 
   const { mutate: loginMutation, isLoading: isLoadingLogin } = useMutation(() =>
-    fetch('https://app-i575ajhit22gu.azurewebsites.net/api/login', {
+    fetch(LOGIN_ROUTE, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
