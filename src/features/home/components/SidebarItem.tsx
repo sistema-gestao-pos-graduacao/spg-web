@@ -11,7 +11,13 @@ const SidebarItem: React.FC<{
   setActive: StateAction<number>;
 }> = ({ item, active, index, setActive }) => {
   return (
-    <Link to={item.route}>
+    <Link
+      style={{
+        opacity: item.isActive ? 1 : 0.5,
+        pointerEvents: item.isActive ? 'auto' : 'none',
+      }}
+      to={item.route}
+    >
       <S.CardContainer onClick={() => setActive(index)}>
         <S.CardIcon $active={active}>
           {React.createElement(item.icon, {

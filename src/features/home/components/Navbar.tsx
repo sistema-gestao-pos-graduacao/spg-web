@@ -6,11 +6,17 @@ import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import { useTranslation } from 'react-i18next';
 import { StateAction } from '../../shared/Shared.types';
+import useApi from '../../shared/useApi';
+import { LOGOUT_ROUTE } from '../../shared/RoutesURL';
+import { HttpMethods } from '../../shared/Shared.consts';
 
 const Navbar: React.FC<{ setLogged: StateAction<boolean> }> = ({
   setLogged,
 }) => {
   const { t } = useTranslation();
+
+  const { refetch } = useApi(LOGOUT_ROUTE, HttpMethods.POST, false);
+
   return (
     <S.Container>
       <Logo
@@ -45,7 +51,13 @@ const Navbar: React.FC<{ setLogged: StateAction<boolean> }> = ({
       </S.Menu>
       <S.User>
         <NotificationsOutlinedIcon fontSize="small" />
-        <span onClick={() => setLogged(false)} style={{ cursor: 'pointer' }}>
+        <span
+          onClick={() => {
+            setLogged(false);
+            refetch();
+          }}
+          style={{ cursor: 'pointer' }}
+        >
           <LogoutOutlinedIcon fontSize="small" />
         </span>
       </S.User>

@@ -66,7 +66,7 @@ export const DisciplinesDetails = {
   Container: styled.div`
     display: grid;
     grid-auto-columns: minmax(0, 1fr);
-    grid-auto-rows: minmax(0, 1fr);
+    grid-auto-rows: 1.25fr 0.75fr;
     grid-template-areas:
       'a a a'
       'b c c';

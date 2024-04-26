@@ -10,7 +10,11 @@ import withDragAndDrop, {
   EventInteractionArgs,
 } from 'react-big-calendar/lib/addons/dragAndDrop';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { EventProps, ManualEventsProps } from './../Schedule.types';
+import {
+  EventProps,
+  ManualEventsProps,
+  ScheduleTableProps,
+} from './../Schedule.types';
 import ScheduleModal from './ScheduleModal';
 import {
   CalendarContainer,
@@ -23,10 +27,9 @@ import 'moment/locale/pt-br';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { CalendarTranlates } from '../Schedule.consts';
-import { StateAction } from '../../shared/Shared.types';
 import CloseIcon from '@mui/icons-material/Close';
-import { ModeScreens, Themes } from '../../shared/Shared.consts';
-import { Typography, capitalize } from '@mui/material';
+import { Roles, Themes } from '../../shared/Shared.consts';
+import { Typography } from '@mui/material';
 
 const locales = {
   'pt-BR': ptBR,
@@ -49,27 +52,20 @@ const CustomHeader = (label: string) => {
   );
 };
 
-const ScheduleTable: React.FC<{
-  events: EventProps[];
-  setEvents: StateAction<EventProps[]>;
-  manualEvents: ManualEventsProps[];
-  setManualEvents: StateAction<ManualEventsProps[]>;
-  externalEvents: Partial<EventProps> | null;
-  setExternalEvents: StateAction<Partial<EventProps> | null>;
-  mode: string;
-}> = ({
+const ScheduleTable: React.FC<ScheduleTableProps> = ({
   events,
   setEvents,
   manualEvents,
   setManualEvents,
   externalEvents,
   setExternalEvents,
-  mode,
+  visionMode,
 }) => {
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [currentEvent, setCurrentEvent] = useState<EventProps | null>(null);
 
-  const isTecherMode = mode === ModeScreens.TEACHER;
+  const isTecherMode = visionMode === Roles.TEACHER;
+
   const onEventDrop = (data: EventInteractionArgs<object>) => {
     const { start, end, event } = data;
 

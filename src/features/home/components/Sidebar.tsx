@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Sidebar as S } from '../Home.style';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import EditNoteOutlinedIcon from '@mui/icons-material/EditNoteOutlined';
@@ -9,40 +9,48 @@ import { SidebarCard } from '../Home.types';
 import SidebarItem from './SidebarItem';
 import { useTranslation } from 'react-i18next';
 import BuildCircleOutlinedIcon from '@mui/icons-material/BuildCircleOutlined';
-import { Typography } from '@mui/material';
+import { Menu, Typography } from '@mui/material';
+import { ContextProps } from '../../shared/Shared.types';
+import { GlobalContext } from '../../shared/Context';
 
 const Sidebar: React.FC = () => {
   const { t } = useTranslation();
+  const { userLogged } = useContext<ContextProps>(GlobalContext);
   const [activeItem, setActiveItem] = useState<number>(0);
+  const [openProfile, setOpenProfile] = useState<boolean>(false);
 
   const sidebarItens: SidebarCard[] = [
     {
       label: t('home.DISCIPLINES'),
       icon: HomeOutlinedIcon,
       route: '/',
+      isActive: true,
     },
     {
       label: t('home.REQUIREMENTS'),
       icon: EditNoteOutlinedIcon,
       route: '/requerimentos',
+      isActive: false,
     },
     {
       label: t('home.CHAT'),
       icon: ChatOutlinedIcon,
       route: '/chat',
+      isActive: false,
     },
     {
       label: t('home.CALENDAR'),
       icon: CalendarMonthOutlinedIcon,
       route: '/calendario',
+      isActive: true,
     },
     {
       label: t('home.SCHEDULE'),
       icon: LockClockOutlined,
       route: '/horarios',
+      isActive: true,
     },
   ];
-
   return (
     <S.Container>
       <S.Cards>
@@ -57,13 +65,45 @@ const Sidebar: React.FC = () => {
         ))}
       </S.Cards>
       <S.User>
-        <S.Config>
-          <BuildCircleOutlinedIcon />
-          <Typography variant="subtitle2" fontSize={'.4rem'}>
-            Configurações
+        <S.WrapperUser onClick={() => setOpenProfile(true)}>
+          <Typography
+            textTransform="capitalize"
+            fontWeight={500}
+            fontSize={'1.5rem'}
+          >
+            {userLogged?.username[0]}
           </Typography>
-        </S.Config>
-        <S.WrapperUser>P</S.WrapperUser>
+        </S.WrapperUser>
+        <Menu
+          sx={{ marginLeft: '3rem' }}
+          open={openProfile}
+          onClose={() => setOpenProfile(false)}
+        >
+          <S.UserMenu>
+            <S.Infos>
+              <Typography
+                textTransform="capitalize"
+                fontWeight={500}
+                fontSize={'1rem'}
+              >
+                {userLogged?.username}
+              </Typography>
+              <Typography
+                textTransform="capitalize"
+                fontWeight={500}
+                fontSize={'1rem'}
+              >
+                {userLogged?.email ?? 'dawdwa'}
+              </Typography>
+            </S.Infos>
+            <S.Config>
+              <BuildCircleOutlinedIcon />
+              <Typography fontWeight={500} fontSize={'.8rem'}>
+                Configurações
+              </Typography>
+            </S.Config>
+          </S.UserMenu>
+        </Menu>
       </S.User>
     </S.Container>
   );

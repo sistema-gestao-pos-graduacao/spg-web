@@ -9,7 +9,7 @@ import { Info } from '@mui/icons-material';
 import { DisciplineForm } from '../Disciplines.props';
 
 const DisciplinesStudents: React.FC<{
-  form: UseFormReturn<DisciplineForm, any, DisciplineForm>;
+  form: UseFormReturn<DisciplineForm, any, undefined>;
   possibleEdit: boolean;
 }> = ({ form, possibleEdit }) => {
   const { t } = useTranslation();
