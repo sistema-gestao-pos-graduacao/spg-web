@@ -75,3 +75,14 @@ export const AccordionContent = styled.div`
     margin: 0.6rem 0 0 0;
   }
 `;
+
+export const ToastError = styled.span`
+  display: flex;
+  background-color: ${({ theme }) => theme.error};
+  width: auto;
+  max-width: 30rem;
+  padding: 0.5rem 1rem;
+  align-items: center;
+  border-radius: 0.5rem;
+  gap: 1rem;
+`;

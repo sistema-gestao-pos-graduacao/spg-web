@@ -1,17 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { MainScreen } from '../../shared/Shared.style';
 import { Button, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import ScheduleTable from './ScheduleTable';
 import { EventProps, ManualEventsProps } from '../Schedule.types';
 import Disciplines from './Disciplines';
-import { ModeScreens } from '../../shared/Shared.consts';
 import { ScheduledContent } from '../Schedule.style';
+import { ContextProps } from '../../shared/Shared.types';
+import { GlobalContext } from '../../shared/Context';
+import { Roles } from '../../shared/Shared.consts';
 
 const Chat: React.FC = () => {
   const { t } = useTranslation();
 
-  const mode: string = ModeScreens.COORDINATOR;
+  const { visionMode } = useContext<ContextProps>(GlobalContext);
 
   const [externalEvents, setExternalEvents] =
     useState<Partial<EventProps> | null>(null);
@@ -51,7 +53,7 @@ const Chat: React.FC = () => {
   }, []);
 
   return (
-    <ScheduledContent $isTeacher={mode === ModeScreens.TEACHER}>
+    <ScheduledContent $isTeacher={visionMode === Roles.TEACHER}>
       <MainScreen.Container>
         <MainScreen.Title>
           <Typography fontWeight={700} color="primary">
@@ -73,11 +75,11 @@ const Chat: React.FC = () => {
             setManualEvents={setManualEvents}
             externalEvents={externalEvents}
             setExternalEvents={setExternalEvents}
-            mode={mode}
+            visionMode={visionMode}
           />
         </MainScreen.Content>
       </MainScreen.Container>
-      {mode !== ModeScreens.TEACHER && (
+      {visionMode !== Roles.TEACHER && (
         <Disciplines
           manualEvents={manualEvents}
           externalEvents={externalEvents}

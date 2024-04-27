@@ -4,7 +4,7 @@ import {
   BrowserRouter,
   useNavigate,
 } from 'react-router-dom';
-import React, { Suspense, lazy, useEffect, useState } from 'react';
+import React, { Suspense, lazy, useContext, useEffect, useState } from 'react';
 import { ThemeProvider as StyledProvider } from 'styled-components';
 import './App.css';
 import './i18n/i18n';
@@ -12,6 +12,10 @@ import { Themes } from './features/shared/Shared.consts';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CircularLoading from './features/shared/components/CircularLoading';
 import DisciplinesDetails from './features/disciplines/components/DisciplinesDetails';
+import { GlobalContext } from './features/shared/Context';
+import { Grow, Snackbar, Typography } from '@mui/material';
+import { ErrorOutline } from '@mui/icons-material';
+import { ToastError } from './features/shared/Shared.style';
 
 const Login = lazy(() => import('./features/login/components/Login'));
 const Home = lazy(() => import('./features/home/components/Home'));
@@ -38,12 +42,17 @@ const theme = createTheme({
     secondary: {
       main: '#FFFFFF',
     },
+    error: {
+      main: '#AD0000',
+    },
   },
 });
 
 const App: React.FC = () => {
   const [logged, setLogged] = useState<boolean>(true);
   const navigate = useNavigate();
+
+  const { apiError, setApiError } = useContext(GlobalContext);
 
   useEffect(() => {
     if (!logged) navigate('/login');
@@ -71,6 +80,20 @@ const App: React.FC = () => {
           </Switch>
         </Home>
       )}
+      <Snackbar
+        open={apiError.isError}
+        autoHideDuration={3e3}
+        onClose={() => setApiError({ errorMessage: '', isError: false })}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        TransitionComponent={Grow}
+      >
+        <ToastError>
+          <ErrorOutline color="secondary" />
+          <Typography fontSize=".9rem" color="secondary">
+            {apiError.errorMessage}
+          </Typography>
+        </ToastError>
+      </Snackbar>
     </main>
   );
 };

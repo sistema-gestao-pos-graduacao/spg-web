@@ -8,7 +8,7 @@ import { UseFormReturn } from 'react-hook-form';
 import { DisciplineForm } from '../Disciplines.props';
 
 const DisciplinesProgram: React.FC<{
-  form: UseFormReturn<DisciplineForm, any, DisciplineForm>;
+  form: UseFormReturn<DisciplineForm, any, undefined>;
   possibleEdit: boolean;
 }> = ({ form, possibleEdit }) => {
   const { t } = useTranslation();

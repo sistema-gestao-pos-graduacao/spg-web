@@ -5,9 +5,23 @@ export const Themes = {
   white: '#FFFFFF',
   gray: '#C2BEBE',
   light_gray: '#E4E4E4',
+  error: '#AD0000',
 };
 
-export const ModeScreens = {
-  COORDINATOR: 'coordinator',
-  TEACHER: 'teacher',
+export const DefaultError = {
+  isError: false,
+  errorMessage: '',
 };
+
+export enum HttpMethods {
+  GET = 'GET',
+  POST = 'POST',
+  PUT = 'PUT',
+  DELETE = 'DELETE',
+}
+
+export enum Roles {
+  ADMIN = 'Admin',
+  TEACHER = 'Teacher',
+  COORDINATOR = 'Coordinator',
+}

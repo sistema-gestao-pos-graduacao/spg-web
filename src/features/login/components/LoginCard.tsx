@@ -13,8 +13,8 @@ import {
   InputAdornment,
   IconButton,
 } from '@mui/material';
-import { useMutation } from 'react-query';
-import { Themes } from '../../shared/Shared.consts';
+import { useEffect } from 'react';
+import { HttpMethods, Themes } from '../../shared/Shared.consts';
 import { Link, useNavigate } from 'react-router-dom';
 import { FormValues, LoginCardProps } from '../Login.types';
 import { useTranslation } from 'react-i18next';
@@ -22,6 +22,8 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useState } from 'react';
+import { LOGIN_ROUTE } from '../../shared/RoutesURL';
+import useApi from '../../shared/useApi';
 
 const LoginCard = ({ setLogged }: LoginCardProps) => {
   const navigate = useNavigate();
@@ -41,33 +43,31 @@ const LoginCard = ({ setLogged }: LoginCardProps) => {
     formState: { errors },
   } = useForm<FormValues>({
     defaultValues: {
-      username: '',
-      password: '',
+      username: 'mestre',
+      password: 'Pucmin@s1234',
     },
   });
 
-  const { mutate: loginMutation, isLoading: isLoadingLogin } = useMutation(() =>
-    fetch('https://app-i575ajhit22gu.azurewebsites.net/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({
-        username: watch('username'),
-        password: btoa(watch('password')),
-      }),
-    }).then((res) => {
-      setLogged(res.ok);
-      navigate('/');
-    }),
+  const { isLoading, isSuccess, refetch } = useApi(
+    LOGIN_ROUTE,
+    HttpMethods.POST,
+    false,
+    {
+      username: watch('username'),
+      password: btoa(watch('password')),
+    },
   );
 
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
+  useEffect(() => {
+    if (isSuccess) {
+      setLogged(true);
+      navigate('/');
+    }
+  }, [isSuccess]);
+
+  const onSubmit: SubmitHandler<FormValues> = async (data) => {
     if (data.username && data.password) {
-      try {
-        loginMutation();
-      } catch (error) {
-        console.error('Login error:', error);
-      }
+      refetch();
     }
   };
 
@@ -138,6 +138,7 @@ const LoginCard = ({ setLogged }: LoginCardProps) => {
                 </Typography>
               }
             />
+            <span>{}</span>
           </FormControl>
         </CardContent>
         <CardActions
@@ -158,15 +159,13 @@ const LoginCard = ({ setLogged }: LoginCardProps) => {
             }}
             type="submit"
           >
-            {isLoadingLogin && (
-              <CircularProgress size={'1rem'} color="secondary" />
-            )}
+            {isLoading && <CircularProgress size={'1rem'} color="secondary" />}
             <Typography variant="caption">{t('login.LOGINBUTTON')}</Typography>
           </Button>
           <Button
             variant="contained"
             style={{ height: '2rem', width: '50%', borderRadius: 20 }}
-            disabled={isLoadingLogin}
+            disabled={isLoading}
             onClick={() => setLogged(true)}
           >
             <Link to={'/'}>

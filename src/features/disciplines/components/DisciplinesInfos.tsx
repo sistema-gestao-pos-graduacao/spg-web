@@ -10,7 +10,7 @@ import { ptBR } from 'date-fns/locale';
 import { UseFormReturn } from 'react-hook-form';
 
 const DisciplinesInfos: React.FC<{
-  form: UseFormReturn<DisciplineForm, any, DisciplineForm>;
+  form: UseFormReturn<DisciplineForm, any, undefined>;
   formData: FormDataProps[];
   possibleEdit: boolean;
 }> = ({ form, formData, possibleEdit }) => {
