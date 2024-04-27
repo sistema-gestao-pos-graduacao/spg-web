@@ -9,6 +9,7 @@ import { SidebarCard } from '../Home.types';
 import SidebarItem from './SidebarItem';
 import { useTranslation } from 'react-i18next';
 import BuildCircleOutlinedIcon from '@mui/icons-material/BuildCircleOutlined';
+import ClassOutlinedIcon from '@mui/icons-material/ClassOutlined';
 import { Typography } from '@mui/material';
 
 const Sidebar: React.FC = () => {
@@ -40,6 +41,11 @@ const Sidebar: React.FC = () => {
       label: t('home.SCHEDULE'),
       icon: LockClockOutlined,
       route: '/horarios',
+    },
+    {
+      label: t('home.REGISTERS'),
+      icon: ClassOutlinedIcon,
+      route: '/cadastros',
     },
   ];
 

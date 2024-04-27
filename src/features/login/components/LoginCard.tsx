@@ -8,6 +8,10 @@ import {
   FormControl,
   Checkbox,
   FormControlLabel,
+  InputLabel,
+  OutlinedInput,
+  InputAdornment,
+  IconButton,
 } from '@mui/material';
 import { useMutation } from 'react-query';
 import { Themes } from '../../shared/Shared.consts';
@@ -16,9 +20,19 @@ import { FormValues, LoginCardProps } from '../Login.types';
 import { useTranslation } from 'react-i18next';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import CircularProgress from '@mui/material/CircularProgress';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { useState } from 'react';
 
 const LoginCard = ({ setLogged }: LoginCardProps) => {
   const navigate = useNavigate();
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+  };
 
   const {
     handleSubmit,
@@ -92,14 +106,26 @@ const LoginCard = ({ setLogged }: LoginCardProps) => {
               helperText={errors.username?.message}
               error={!!errors.username?.message}
             />
-            <TextField
-              label="Password"
-              type="password"
+            <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+            <OutlinedInput
+              id="outlined-adornment-password"
+              type={showPassword ? 'text' : 'password'}
               {...register('password', { required: 'Password is required' })}
-              autoComplete="current-password"
-              style={{ paddingBottom: 10 }}
-              helperText={errors.password?.message}
               error={!!errors.password?.message}
+              style={{ paddingBottom: 10 }}
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    onMouseDown={handleMouseDownPassword}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              }
+              label="Password"
             />
             <FormControlLabel
               control={<Checkbox defaultChecked />}
