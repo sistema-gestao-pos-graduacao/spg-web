@@ -11,6 +11,7 @@ const PtBr = {
   RESUMES: 'Currículos',
   CONTACT: 'Contato',
   SCHEDULE: 'Horários',
+  REGISTERS: 'Cadastros'
 };
 
 export default PtBr;

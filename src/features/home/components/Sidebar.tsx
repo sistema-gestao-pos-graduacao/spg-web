@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Sidebar as S } from '../Home.style';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import EditNoteOutlinedIcon from '@mui/icons-material/EditNoteOutlined';
@@ -9,6 +9,7 @@ import { SidebarCard } from '../Home.types';
 import SidebarItem from './SidebarItem';
 import { useTranslation } from 'react-i18next';
 import BuildCircleOutlinedIcon from '@mui/icons-material/BuildCircleOutlined';
+import ClassOutlinedIcon from '@mui/icons-material/ClassOutlined';
 import { Menu, Typography } from '@mui/material';
 import { ContextProps } from '../../shared/Shared.types';
 import { GlobalContext } from '../../shared/Context';
@@ -49,6 +50,12 @@ const Sidebar: React.FC = () => {
       icon: LockClockOutlined,
       route: '/horarios',
       isActive: true,
+    },
+    {
+      label: t('home.REGISTERS'),
+      icon: ClassOutlinedIcon,
+      route: '/cadastros',
+      isActive: true
     },
   ];
   return (

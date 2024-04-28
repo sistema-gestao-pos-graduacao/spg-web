@@ -28,6 +28,10 @@ const Requirements = lazy(
 );
 const Calendar = lazy(() => import('./features/calendar/components/Calendar'));
 const Schedule = lazy(() => import('./features/schedule/components/Schedule'));
+const Registers = lazy(() => import('./features/registers/components/Registers'));
+const Curriculum = lazy(() => import('./features/registers/components/Curriculum'));
+const Discipline = lazy(() => import('./features/registers/components/Discipline'));
+const Teacher = lazy(() => import('./features/registers/components/Teacher'));
 
 const theme = createTheme({
   palette: {
@@ -45,7 +49,7 @@ const theme = createTheme({
 });
 
 const App: React.FC = () => {
-  const [logged, setLogged] = useState<boolean>(false);
+  const [logged, setLogged] = useState<boolean>(true);
   const navigate = useNavigate();
 
   const { apiError, setApiError } = useContext(GlobalContext);
@@ -69,6 +73,10 @@ const App: React.FC = () => {
             <Route path="/chat" element={<Chat />} />
             <Route path="/calendario" element={<Calendar />} />
             <Route path="/horarios" element={<Schedule />} />
+            <Route path="/cadastros" element={<Registers />} />
+            <Route path="/matriz" element={<Curriculum />} />
+            <Route path="/disciplinas" element={<Discipline />} />
+            <Route path="/professor" element={<Teacher />} />
           </Switch>
         </Home>
       )}
