@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Sidebar as S } from '../Home.style';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import EditNoteOutlinedIcon from '@mui/icons-material/EditNoteOutlined';
@@ -55,7 +55,7 @@ const Sidebar: React.FC = () => {
       label: t('home.REGISTERS'),
       icon: ClassOutlinedIcon,
       route: '/cadastros',
-      isActive: false
+      isActive: true
     },
   ];
   return (

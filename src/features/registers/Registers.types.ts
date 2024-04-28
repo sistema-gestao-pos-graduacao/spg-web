@@ -1,6 +1,6 @@
 import { SvgIconTypeMap } from '@mui/material';
 import { OverridableComponent } from '@mui/material/OverridableComponent';
-import { FieldErrors } from 'react-hook-form';
+import { Dayjs } from 'dayjs';
 
 export type RegisterCardProps = {
     icon: OverridableComponent<SvgIconTypeMap<{}, 'svg'>> & {
@@ -13,19 +13,31 @@ export type RegisterCardProps = {
 
 export type FormDiscipline = {
   curriculum: string;
-  discipline: string;
-  teacher: string;
-  hours: number;
+  disciplines: Disciplines[]
 };
 
-export type FormCurriculum = {
-  curriculum: string;
-  specialization: string;
+export type Disciplines = {
+  discipline: string;
+  teacher: string;
+  hours: Dayjs | null;
 };
 
 export type StepProps = {
-  errors: FieldErrors<FormDiscipline>
   steps: string[];
   step1: React.ReactNode;
   step2: React.ReactNode;
+  onSubmit: () => void;
+  isValid: boolean;
+};
+
+export type FormCurriculum = {
+  specialization: string;
+  curriculum: string;
+};
+
+export type FormTeacher = {
+  name: string;
+  email: string;
+  cpf?: string;
+  birthDate?: Dayjs | null;
 };

@@ -8,6 +8,8 @@ const PtBr = {
     CARDDESCRIPTION3: 'Selecione essa opção para acessar as ferramentas de cadastro de professor',
     TITLEMATRIZ: 'CADASTROS > MATRIZ',
     SUBTITLEMATRIZ: 'Cadastro de Matriz Curricular',
+    SUCCESSTITLE: 'Matriz Curricular Cadastrada com Sucesso!',
+    SUCCESSMESSAGE: 'Agora você pode cadastrar disciplinas na matriz curricular Cadastrada. Por meio do menu Cadastrar Disciplinas.',
     TITLEDISCIPLINAS: 'CADASTROS > DISCIPLINAS',
     SUBTITLEDISCIPLINAS: 'Cadastro de Disciplinas',
     TITLEPROFESSOR: 'CADASTROS > PROFESSOR',
