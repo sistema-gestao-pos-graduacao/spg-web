@@ -33,7 +33,14 @@ export const Modal = {
 export const CalendarContainer = styled.span`
   height: 100%;
   width: 100%;
-  padding: 0 1rem 1rem 0;
+  padding: 0 1rem 0 0;
+
+  .rbc-event {
+    position: relative;
+  }
+  .rbc-events-container {
+    margin-right: 0 !important;
+  }
 
   tr {
     .rbc-header {
@@ -89,7 +96,8 @@ export const DisciplinesStyled = {
     margin: 1rem 1rem 1rem 0;
     background-color: white;
     border-radius: 1.5rem;
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 1rem 1rem 1rem;
+    overflow: hidden;
   `,
 };
 
@@ -115,10 +123,13 @@ export const EventItemContent = styled.div`
 
 export const RemoveEventButton = styled.button`
   display: flex;
+  position: absolute;
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0;
+  padding: 0.1rem;
+  right: 0;
+  top: 0;
 `;
 
 export const DisciplineList = styled.div`

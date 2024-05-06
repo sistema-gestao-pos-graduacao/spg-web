@@ -5,7 +5,7 @@ import { Themes } from '../../shared/Shared.consts';
 import { DisciplinesDetails as S } from '../Disciplines.style';
 import { UseFormReturn } from 'react-hook-form';
 
-import { DisciplineForm } from '../Disciplines.props';
+import { DisciplineForm } from '../Disciplines.types';
 
 const DisciplinesProgram: React.FC<{
   form: UseFormReturn<DisciplineForm, any, undefined>;
@@ -22,7 +22,7 @@ const DisciplinesProgram: React.FC<{
       <S.TextArea
         $possibleEdit={possibleEdit}
         disabled={!possibleEdit}
-        {...register('curriculum')}
+        {...register('syllabus')}
       />
     </S.ProgramContainer>
   );

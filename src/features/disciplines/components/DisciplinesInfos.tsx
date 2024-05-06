@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Themes } from '../../shared/Shared.consts';
 import { DisciplinesDetails as S } from '../Disciplines.style';
 
-import { DisciplineForm, FormDataProps } from '../Disciplines.props';
+import { DisciplineForm, FormDataProps } from '../Disciplines.types';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { UseFormReturn } from 'react-hook-form';

@@ -13,10 +13,11 @@ import ClassOutlinedIcon from '@mui/icons-material/ClassOutlined';
 import { Menu, Typography } from '@mui/material';
 import { ContextProps } from '../../shared/Shared.types';
 import { GlobalContext } from '../../shared/Context';
+import { Roles } from '../../shared/Shared.consts';
 
 const Sidebar: React.FC = () => {
   const { t } = useTranslation();
-  const { userLogged } = useContext<ContextProps>(GlobalContext);
+  const { userLogged, visionMode } = useContext<ContextProps>(GlobalContext);
   const [activeItem, setActiveItem] = useState<number>(0);
   const [openProfile, setOpenProfile] = useState<boolean>(false);
 
@@ -55,13 +56,17 @@ const Sidebar: React.FC = () => {
       label: t('home.REGISTERS'),
       icon: ClassOutlinedIcon,
       route: '/cadastros',
-      isActive: true
+      isActive: visionMode !== Roles.TEACHER,
     },
   ];
+
   return (
     <S.Container>
       <S.Cards>
-        {sidebarItens.map((item, index) => (
+        {(visionMode === Roles.TEACHER
+          ? sidebarItens.filter(({ route }) => route !== '/cadastros')
+          : sidebarItens
+        ).map((item, index) => (
           <SidebarItem
             key={item.label}
             item={item}
@@ -95,11 +100,7 @@ const Sidebar: React.FC = () => {
               >
                 {userLogged?.username}
               </Typography>
-              <Typography
-                textTransform="capitalize"
-                fontWeight={500}
-                fontSize={'1rem'}
-              >
+              <Typography fontWeight={500} fontSize={'1rem'}>
                 {userLogged?.email ?? 'dawdwa'}
               </Typography>
             </S.Infos>

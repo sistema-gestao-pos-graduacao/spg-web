@@ -11,7 +11,7 @@ import {
   DisciplinesStyled as S,
 } from '../Schedule.style';
 import { MainScreen } from '../../shared/Shared.style';
-import { Typography } from '@mui/material';
+import { Skeleton, Typography } from '@mui/material';
 import { Themes } from '../../shared/Shared.consts';
 import AccordionComponent from '../../shared/components/Accordion';
 
@@ -19,7 +19,8 @@ const Disciplines: React.FC<{
   manualEvents: ManualEventsProps[];
   externalEvents: Partial<EventProps> | null;
   setExternalEvents: StateAction<Partial<EventProps> | null>;
-}> = ({ manualEvents, setExternalEvents }) => {
+  isLoading?: boolean;
+}> = ({ manualEvents, setExternalEvents, isLoading }) => {
   const { t } = useTranslation();
 
   const SelectExternalEvent = (event: DragEvent<HTMLDivElement>) => {
@@ -27,17 +28,29 @@ const Disciplines: React.FC<{
     setExternalEvents(JSON.parse(customProp as string));
   };
 
+  if (isLoading)
+    return (
+      <S.Container style={{ padding: '0' }}>
+        <Skeleton
+          width="100%"
+          height="100%"
+          variant="rectangular"
+          sx={{ animationDuration: '1.5s' }}
+        />
+      </S.Container>
+    );
+
   return (
     <S.Container>
-      <MainScreen.Title>
+      <MainScreen.Title style={{ minHeight: '2.5rem' }}>
         <Typography fontWeight={700} color="primary">
           {t('schedule.MANUAL_DOCKING')}
         </Typography>
       </MainScreen.Title>
 
       <DisciplineList>
-        {manualEvents.map(({ items, title }) => (
-          <React.Fragment key={title}>
+        {manualEvents.map(({ items, title, id }) => (
+          <React.Fragment key={id}>
             <AccordionComponent
               label={title}
               listItens={
@@ -61,7 +74,7 @@ const Disciplines: React.FC<{
                     >
                       <EventItemContent>
                         <Typography color={Themes.white}>
-                          {events.title}
+                          {events.name}
                         </Typography>
                       </EventItemContent>
                     </EventItem>

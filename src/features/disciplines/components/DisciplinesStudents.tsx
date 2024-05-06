@@ -6,7 +6,7 @@ import { DisciplinesDetails as S } from '../Disciplines.style';
 import { UseFormReturn } from 'react-hook-form';
 
 import { Info } from '@mui/icons-material';
-import { DisciplineForm } from '../Disciplines.props';
+import { DisciplineForm } from '../Disciplines.types';
 
 const DisciplinesStudents: React.FC<{
   form: UseFormReturn<DisciplineForm, any, undefined>;

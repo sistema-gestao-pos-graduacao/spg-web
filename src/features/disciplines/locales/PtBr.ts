@@ -3,7 +3,9 @@ const PtBr = {
   ACTIVES_CLASSES: 'Turmas Ativas: ',
   PERIOD: 'Período de referência: ',
   TEACHER: 'Professor',
+  MATRIX: 'Matriz Curricular',
   DISCIPLINE: 'Disciplina',
+  HOURS: 'Horas de Aula',
   LOCATION: 'Local',
   BUILDING: 'Prédio',
   ROOM: 'Sala',
@@ -16,6 +18,7 @@ const PtBr = {
   SAVE: 'Salvar',
   CANCEL: 'Cancelar',
   STUDENTS_TOOLTIP: 'Separe o nome dos alunos por vírgula.',
+  NO_CONTENT: 'Nenhuma disciplina associada a este usuário.',
 };
 
 export default PtBr;

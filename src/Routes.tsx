@@ -28,9 +28,15 @@ const Requirements = lazy(
 );
 const Calendar = lazy(() => import('./features/calendar/components/Calendar'));
 const Schedule = lazy(() => import('./features/schedule/components/Schedule'));
-const Registers = lazy(() => import('./features/registers/components/Registers'));
-const Curriculum = lazy(() => import('./features/registers/components/Curriculum'));
-const Discipline = lazy(() => import('./features/registers/components/Discipline'));
+const Registers = lazy(
+  () => import('./features/registers/components/Registers'),
+);
+const Curriculum = lazy(
+  () => import('./features/registers/components/Curriculum'),
+);
+const Discipline = lazy(
+  () => import('./features/registers/components/Discipline'),
+);
 const Teacher = lazy(() => import('./features/registers/components/Teacher'));
 
 const theme = createTheme({
@@ -49,7 +55,7 @@ const theme = createTheme({
 });
 
 const App: React.FC = () => {
-  const [logged, setLogged] = useState<boolean>(true);
+  const [logged, setLogged] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const { apiError, setApiError } = useContext(GlobalContext);

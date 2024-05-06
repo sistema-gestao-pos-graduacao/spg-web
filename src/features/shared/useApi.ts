@@ -3,8 +3,9 @@ import { useContext } from 'react';
 import { useQuery } from 'react-query';
 import { GlobalContext } from './Context';
 import { useTranslation } from 'react-i18next';
+import { CONTEXT_ROUTE, LOGIN_ROUTE } from './RoutesURL';
 
-const useApi = (
+const useApi = <T>(
   route: string,
   method: 'POST' | 'GET' | 'PUT' | 'DELETE',
   enabled: boolean = true,
@@ -41,18 +42,22 @@ const useApi = (
     }
   };
 
-  const { data, isLoading, isError, refetch, isSuccess } = useQuery(
-    [route, {}],
-    fetchData,
-    {
+  const { data, isLoading, isError, refetch, isSuccess, isFetching } =
+    useQuery<T>([`${route}-${method}`, {}], fetchData, {
       enabled,
       retry: false,
-      cacheTime: 0,
+      cacheTime: route === LOGIN_ROUTE || route === CONTEXT_ROUTE ? 0 : 3e5,
+      staleTime: 0,
       refetchOnWindowFocus: false,
-    },
-  );
+    });
 
-  return { data, isSuccess, isLoading, isError, refetch };
+  return {
+    data,
+    isSuccess,
+    isLoading: isLoading || isFetching,
+    isError,
+    refetch,
+  };
 };
 
 export default useApi;

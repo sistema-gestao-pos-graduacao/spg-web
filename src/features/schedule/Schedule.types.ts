@@ -1,18 +1,22 @@
 import { stringOrDate } from 'react-big-calendar';
-import { StateAction, VisionModeType } from '../shared/Shared.types';
+import { StateAction } from '../shared/Shared.types';
 
 export interface EventProps {
-  start: stringOrDate;
-  end: stringOrDate;
+  start?: stringOrDate;
+  end?: stringOrDate;
+  startDateTime?: stringOrDate;
+  endDateTime?: stringOrDate;
   color: string;
-  id?: number;
-  title?: string;
-  teacher?: string;
+  id?: string;
+  name?: string;
+  teacherName?: string;
+  teacherId?: number;
   workload?: number;
 }
 
 export interface ManualEventsProps {
   title: string;
+  id: number;
   items: Partial<EventProps>[];
 }
 export interface ScheduleTableProps {
@@ -22,5 +26,4 @@ export interface ScheduleTableProps {
   setManualEvents: StateAction<ManualEventsProps[]>;
   externalEvents: Partial<EventProps> | null;
   setExternalEvents: StateAction<Partial<EventProps> | null>;
-  visionMode: VisionModeType;
 }

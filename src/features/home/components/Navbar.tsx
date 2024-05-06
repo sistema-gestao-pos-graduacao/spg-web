@@ -1,21 +1,40 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Navbar as S } from '../Home.style';
 import Logo from '../../shared/components/Logo';
 import RedirectMenu from '../../shared/components/RedirectMenu';
 import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import { useTranslation } from 'react-i18next';
-import { StateAction } from '../../shared/Shared.types';
+import {
+  ContextProps,
+  CoursesResponseProps,
+  StateAction,
+} from '../../shared/Shared.types';
 import useApi from '../../shared/useApi';
-import { LOGOUT_ROUTE } from '../../shared/RoutesURL';
+import {
+  COURSES_ROUTE,
+  CURRICULUM_ROUTE,
+  LOGOUT_ROUTE,
+} from '../../shared/RoutesURL';
 import { HttpMethods } from '../../shared/Shared.consts';
+import { CurriculomResponseProps } from '../../registers/Registers.types';
+import { GlobalContext } from '../../shared/Context';
 
 const Navbar: React.FC<{ setLogged: StateAction<boolean> }> = ({
   setLogged,
 }) => {
   const { t } = useTranslation();
+  const { setUserLogged } = useContext<ContextProps>(GlobalContext);
 
   const { refetch } = useApi(LOGOUT_ROUTE, HttpMethods.POST, false);
+
+  const { data: courseData, isLoading: courseLoading } = useApi<
+    CoursesResponseProps[]
+  >(COURSES_ROUTE, HttpMethods.GET);
+
+  const { data: curriculumData, isLoading: curriculumLoading } = useApi<
+    CurriculomResponseProps[]
+  >(CURRICULUM_ROUTE, HttpMethods.GET);
 
   return (
     <S.Container>
@@ -34,26 +53,23 @@ const Navbar: React.FC<{ setLogged: StateAction<boolean> }> = ({
       >
         <RedirectMenu
           label={t('home.OUR_CURSES')}
-          listItems={['1', '2', '3', '4']}
+          listItems={courseData?.map(({ name }) => name) ?? []}
+          isLoading={courseLoading}
         />
-        <RedirectMenu
-          label={t('home.PARTNERSHIPS')}
-          listItems={['5', '6', '7', '8']}
-        />
+        <RedirectMenu label={t('home.PARTNERSHIPS')} listItems={[]} isLoading />
         <RedirectMenu
           label={t('home.RESUMES')}
-          listItems={['9', '10', '11', '12']}
+          listItems={curriculumData?.map(({ name }) => name) ?? []}
+          isLoading={curriculumLoading}
         />
-        <RedirectMenu
-          label={t('home.CONTACT')}
-          listItems={['13', '14', '15', '16']}
-        />
+        <RedirectMenu label={t('home.CONTACT')} listItems={[]} isLoading />
       </S.Menu>
       <S.User>
         <NotificationsOutlinedIcon fontSize="small" />
         <span
           onClick={() => {
             setLogged(false);
+            setUserLogged(null);
             refetch();
           }}
           style={{ cursor: 'pointer' }}

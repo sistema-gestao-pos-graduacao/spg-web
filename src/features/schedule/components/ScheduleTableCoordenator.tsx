@@ -10,26 +10,21 @@ import withDragAndDrop, {
   EventInteractionArgs,
 } from 'react-big-calendar/lib/addons/dragAndDrop';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import {
-  EventProps,
-  ManualEventsProps,
-  ScheduleTableProps,
-} from './../Schedule.types';
+import { EventProps, ScheduleTableProps } from '../Schedule.types';
 import ScheduleModal from './ScheduleModal';
 import {
   CalendarContainer,
   EventItem,
   EventItemContent,
   RemoveEventButton,
-} from './../Schedule.style';
+} from '../Schedule.style';
 import moment from 'moment';
 import 'moment/locale/pt-br';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { CalendarTranlates } from '../Schedule.consts';
 import CloseIcon from '@mui/icons-material/Close';
-import { Roles, Themes } from '../../shared/Shared.consts';
-import { Typography } from '@mui/material';
+import { Themes } from '../../shared/Shared.consts';
 
 const locales = {
   'pt-BR': ptBR,
@@ -44,27 +39,16 @@ const localizer = dateFnsLocalizer({
 });
 const DnDCalendar = withDragAndDrop(Calendar);
 
-const CustomHeader = (label: string) => {
-  return (
-    <Typography fontWeight={700} textTransform="capitalize">
-      {label.split(' ')[1]}
-    </Typography>
-  );
-};
-
-const ScheduleTable: React.FC<ScheduleTableProps> = ({
+const ScheduleTableCoordenator: React.FC<ScheduleTableProps> = ({
   events,
   setEvents,
   manualEvents,
   setManualEvents,
   externalEvents,
   setExternalEvents,
-  visionMode,
 }) => {
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [currentEvent, setCurrentEvent] = useState<EventProps | null>(null);
-
-  const isTecherMode = visionMode === Roles.TEACHER;
 
   const onEventDrop = (data: EventInteractionArgs<object>) => {
     const { start, end, event } = data;
@@ -86,7 +70,6 @@ const ScheduleTable: React.FC<ScheduleTableProps> = ({
   const onDropFromOutsideEvent = (data: DragFromOutsideItemArgs) => {
     const { start } = data;
     const hours = new Date(start).getHours();
-
     let endDate = new Date(start).setHours(hours + 1);
     setEvents((prev) => [
       ...prev,
@@ -101,12 +84,12 @@ const ScheduleTable: React.FC<ScheduleTableProps> = ({
 
     const removedItem = [
       ...(manualEvents.find(
-        ({ title }) => title === externalEvents?.title?.split('- ')[1],
+        ({ id }) => id === Number(externalEvents?.id?.split('-')[0]),
       )?.items ?? []),
     ];
     const clone = [...manualEvents];
     const index = clone.findIndex(
-      ({ title }) => title === externalEvents?.title?.split('- ')[1],
+      ({ id }) => id === Number(externalEvents?.id?.split('-')[0]),
     );
 
     clone[index] = {
@@ -128,7 +111,6 @@ const ScheduleTable: React.FC<ScheduleTableProps> = ({
 
   const setTeacherScheduleds = (slotInfo: SlotInfo) => {
     const { start, end } = slotInfo;
-
     setEvents([
       ...events,
       {
@@ -145,14 +127,13 @@ const ScheduleTable: React.FC<ScheduleTableProps> = ({
       setOpenModal(true);
     };
     const removeEvent = (event: EventProps) => {
-      const { title, id } = event;
-
+      const { id } = event;
       const index = manualEvents.findIndex(
-        ({ title: eventTitle }) => eventTitle === title?.split('- ')[1],
+        ({ id: eventId }) => eventId === Number(id?.split('-')[0]),
       );
-
       const clone = [...manualEvents];
-      clone[index].items.push(event);
+      const { start, end, ...rest } = event as Event;
+      clone[index].items.push(rest as EventProps);
 
       setManualEvents(clone);
       setEvents((prev) => prev.filter(({ id: eventsId }) => eventsId !== id));
@@ -163,22 +144,10 @@ const ScheduleTable: React.FC<ScheduleTableProps> = ({
     return (
       <EventItem>
         <EventItemContent onClick={() => SelectEvent(event)}>
-          {event.title}
+          {event.name}
         </EventItemContent>
         <RemoveEventButton onClick={() => removeEvent(event as EventProps)}>
-          <CloseIcon
-            color="secondary"
-            style={
-              isTecherMode
-                ? {
-                    ...defaultStyle,
-                    position: 'absolute',
-                    top: '0',
-                    right: '0',
-                  }
-                : defaultStyle
-            }
-          />
+          <CloseIcon color="secondary" style={defaultStyle} />
         </RemoveEventButton>
       </EventItem>
     );
@@ -187,9 +156,9 @@ const ScheduleTable: React.FC<ScheduleTableProps> = ({
   return (
     <CalendarContainer>
       <DnDCalendar
-        defaultDate={moment().toDate()}
+        defaultDate={moment().utcOffset('-03:00').toDate()}
         messages={CalendarTranlates}
-        defaultView={isTecherMode ? 'week' : 'month'}
+        defaultView={'month'}
         events={events}
         localizer={localizer}
         onEventDrop={onEventDrop}
@@ -197,20 +166,12 @@ const ScheduleTable: React.FC<ScheduleTableProps> = ({
         resizable
         culture="pt-BR"
         onDropFromOutside={onDropFromOutsideEvent}
-        components={
-          isTecherMode
-            ? {
-                ...rowEvent,
-                toolbar: () => null,
-                header: ({ label }) => CustomHeader(label),
-              }
-            : rowEvent
-        }
-        views={isTecherMode ? ['week'] : ['month', 'day', 'agenda']}
+        components={rowEvent}
+        views={['month', 'day', 'agenda']}
         step={10}
         timeslots={6}
         onSelectSlot={setTeacherScheduleds}
-        selectable={isTecherMode}
+        selectable={false}
       />
       {currentEvent && (
         <ScheduleModal
@@ -223,4 +184,4 @@ const ScheduleTable: React.FC<ScheduleTableProps> = ({
   );
 };
 
-export default ScheduleTable;
+export default ScheduleTableCoordenator;

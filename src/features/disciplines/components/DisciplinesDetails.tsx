@@ -1,73 +1,86 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { MainScreen } from '../../shared/Shared.style';
-import { Button, Typography } from '@mui/material';
+import { Button, CircularProgress, Skeleton, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { Themes } from '../../shared/Shared.consts';
+import { HttpMethods, Themes } from '../../shared/Shared.consts';
 import { DisciplinesDetails as S } from '../Disciplines.style';
 import { useForm } from 'react-hook-form';
 import { Cancel, Edit, Save } from '@mui/icons-material';
-import { DisciplineForm } from '../Disciplines.props';
-import CircularLoading from '../../shared/components/CircularLoading';
 import DisciplinesInfos from './DisciplinesInfos';
 import DisciplinesStudents from './DisciplinesStudents';
 import DisciplinesProgram from './DisciplinesProgram';
+import { SubjectsResponseProps } from '../../shared/Shared.types';
+import { SUBJECTS_ROUTE } from '../../shared/RoutesURL';
+import { useLocation } from 'react-router-dom';
+import useApi from '../../shared/useApi';
+import { DisciplineForm } from '../Disciplines.types';
 
 const DisciplinesDetails: React.FC = () => {
   const { t } = useTranslation();
   const [possibleEdit, setPossibleEdit] = useState<boolean>(false);
   const form = useForm<DisciplineForm>();
-  const { reset, getValues } = form;
+  const { reset, watch } = form;
+  const location = useLocation();
+  const subjectId = location.pathname.split('/')[2];
 
-  const disciplines = useMemo(
-    () => ({
-      discipline: 'Controle de Processos',
-      id: 24,
+  const {
+    data: disciplineData,
+    isLoading: disciplineLoading,
+    refetch: disciplineRefetch,
+  } = useApi<SubjectsResponseProps>(
+    `${SUBJECTS_ROUTE}/${subjectId}`,
+    HttpMethods.GET,
+  );
 
-      teacher: 'Renata',
-      location: null,
-      building: null,
-      room: null,
-      dayWeek: new Date('2024/04/20'),
-      time: '17:00 - 18:00',
-
-      considerations: null,
-      students: null,
-      curriculum: null,
-    }),
-    [],
+  const { isLoading, refetch, isSuccess } = useApi<SubjectsResponseProps>(
+    SUBJECTS_ROUTE,
+    HttpMethods.PUT,
+    false,
+    {
+      ...watch(),
+      students: watch('students')?.split(', '),
+    },
   );
 
   useEffect(() => {
-    reset({
-      ...disciplines,
-      students: (disciplines.students ?? []).join(),
-    });
-  }, [disciplines]);
+    if (disciplineData)
+      reset({
+        ...disciplineData,
+        students: (disciplineData.students ?? []).join(', '),
+      });
+  }, [disciplineData]);
+
+  useEffect(() => {
+    if (isSuccess) {
+      disciplineRefetch();
+      setPossibleEdit(false);
+    }
+  }, [isSuccess]);
 
   const formData = useMemo(
     () => [
       {
         label: t('disciplines.TEACHER'),
         edited: false,
-        key: 'teacher',
+        key: 'teacherName',
+        type: 'text',
+      },
+      {
+        label: t('disciplines.MATRIX'),
+        edited: false,
+        key: 'curriculumName',
         type: 'text',
       },
       {
         label: t('disciplines.DISCIPLINE'),
         edited: false,
-        key: 'discipline',
+        key: 'name',
         type: 'text',
       },
       {
-        label: t('disciplines.DAY_WEEK'),
+        label: t('disciplines.HOURS'),
         edited: false,
-        key: 'dayWeek',
-        type: 'text',
-      },
-      {
-        label: t('disciplines.TIME'),
-        edited: false,
-        key: 'time',
+        key: 'hours',
         type: 'text',
       },
       {
@@ -93,17 +106,14 @@ const DisciplinesDetails: React.FC = () => {
   );
 
   const onSubmit = () => {
-    console.log('ATUALIZADO -> ', getValues());
+    refetch();
   };
-
-  if (!disciplines || Object.keys(getValues()).length === 0)
-    return <CircularLoading />;
 
   return (
     <MainScreen.Container>
       <MainScreen.Title>
         <Typography fontWeight={700} color={Themes.primary}>
-          {`${t('disciplines.DISCIPLINES')} → ${disciplines.id}`}
+          {`${t('disciplines.DISCIPLINES')} → ${subjectId}`}
         </Typography>
         {possibleEdit ? (
           <div style={{ display: 'flex', gap: '.5rem' }}>
@@ -116,8 +126,8 @@ const DisciplinesDetails: React.FC = () => {
               onClick={() => {
                 setPossibleEdit(false);
                 reset({
-                  ...disciplines,
-                  students: (disciplines.students ?? []).join(),
+                  ...disciplineData,
+                  students: (disciplineData?.students ?? []).join(', '),
                 });
               }}
             >
@@ -125,15 +135,16 @@ const DisciplinesDetails: React.FC = () => {
             </Button>
             <Button
               type="button"
-              startIcon={<Save />}
+              startIcon={!isLoading && <Save />}
               style={{ borderRadius: '1.5rem', paddingRight: '1rem' }}
               size="small"
               variant="contained"
-              onClick={() => {
-                setPossibleEdit(false);
-                onSubmit();
-              }}
+              sx={{ gap: isLoading ? '.5rem' : 'unset' }}
+              onClick={onSubmit}
             >
+              {isLoading && (
+                <CircularProgress size={'1rem'} color="secondary" />
+              )}
               {t('disciplines.SAVE')}
             </Button>
           </div>
@@ -153,14 +164,53 @@ const DisciplinesDetails: React.FC = () => {
 
       <MainScreen.Content>
         <S.Container>
-          <DisciplinesInfos
-            form={form}
-            formData={formData}
-            possibleEdit={possibleEdit}
-          />
-          <DisciplinesStudents form={form} possibleEdit={possibleEdit} />
+          {disciplineLoading ? (
+            <Skeleton
+              style={{
+                gridArea: 'a',
+                borderRadius: '1.5rem',
+                animationDuration: '1.5s',
+              }}
+              width={'100%'}
+              height={'100%'}
+              variant="rectangular"
+            />
+          ) : (
+            <DisciplinesInfos
+              form={form}
+              formData={formData}
+              possibleEdit={possibleEdit}
+            />
+          )}
+          {disciplineLoading ? (
+            <Skeleton
+              style={{
+                gridArea: 'b',
+                borderRadius: '1.5rem',
+                animationDuration: '1.5s',
+              }}
+              width={'100%'}
+              height={'100%'}
+              variant="rectangular"
+            />
+          ) : (
+            <DisciplinesStudents form={form} possibleEdit={possibleEdit} />
+          )}
 
-          <DisciplinesProgram form={form} possibleEdit={possibleEdit} />
+          {disciplineLoading ? (
+            <Skeleton
+              style={{
+                gridArea: 'c',
+                borderRadius: '1.5rem',
+                animationDuration: '1.5s',
+              }}
+              width={'100%'}
+              height={'100%'}
+              variant="rectangular"
+            />
+          ) : (
+            <DisciplinesProgram form={form} possibleEdit={possibleEdit} />
+          )}
         </S.Container>
       </MainScreen.Content>
     </MainScreen.Container>

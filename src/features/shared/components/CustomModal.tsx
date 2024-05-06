@@ -21,23 +21,28 @@ const style = {
 };
 
 type CustomModalProps = {
-    open: boolean;
-    title: string;
-    message: string;
-    onClose: () => void;
-    redirect?: string | null;
+  open: boolean;
+  title: string;
+  message: string;
+  onClose: () => void;
+  redirect?: string | null;
 };
 
-export default function CustomModal({ open, title, message, onClose, redirect = null }: CustomModalProps) {
+export default function CustomModal({
+  open,
+  title,
+  message,
+  onClose,
+  redirect = null,
+}: CustomModalProps) {
+  const navigate = useNavigate();
 
-    const navigate = useNavigate();
-
-    const handleClose = () => {
-        onClose();
-        if (redirect) {
-            navigate(`/${redirect}`)
-        }
-    };
+  const handleClose = () => {
+    onClose();
+    if (redirect) {
+      navigate(`/${redirect}`);
+    }
+  };
 
   return (
     <Modal
@@ -47,28 +52,46 @@ export default function CustomModal({ open, title, message, onClose, redirect = 
       aria-describedby="modal-message"
     >
       <Box sx={style}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-            <Typography id="modal-title" variant="h5" color={'#074458'} align='center' sx={{ fontWeight: 600 }}>
-                {title}
-            </Typography>
-            <Typography id="modal-message" variant="subtitle1" color={'#074458'} sx={{ mt: 5 }}>
-                {message}
-            </Typography>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Typography
+            id="modal-title"
+            variant="h5"
+            color={'#074458'}
+            align="center"
+            sx={{ fontWeight: 600 }}
+          >
+            {title}
+          </Typography>
+          <Typography
+            id="modal-message"
+            variant="subtitle1"
+            color={'#074458'}
+            sx={{ mt: 5 }}
+          >
+            {message}
+          </Typography>
         </Box>
 
         <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <Button
-                variant="contained"
-                style={{
-                    height: '2rem',
-                    width: '50%',
-                    borderRadius: '1rem',
-                    gap: '.5rem',
-                }}
-                onClick={handleClose}
-                >
-                <Typography variant="caption">Fechar</Typography>
-            </Button>
+          <Button
+            variant="contained"
+            style={{
+              height: '2rem',
+              width: '50%',
+              borderRadius: '1rem',
+              gap: '.5rem',
+            }}
+            onClick={handleClose}
+          >
+            <Typography variant="caption">Fechar</Typography>
+          </Button>
         </Box>
       </Box>
     </Modal>

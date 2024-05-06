@@ -3,23 +3,21 @@ import { OverridableComponent } from '@mui/material/OverridableComponent';
 import { Dayjs } from 'dayjs';
 
 export type RegisterCardProps = {
-    icon: OverridableComponent<SvgIconTypeMap<{}, 'svg'>> & {
-        muiName: string;
-      };
-    title: string;
-    description: string;
-    url: string;
+  icon: OverridableComponent<SvgIconTypeMap<{}, 'svg'>> & {
+    muiName: string;
+  };
+  title: string;
+  description: string;
+  url: string;
 };
 
-export type FormDiscipline = {
-  curriculum: string;
-  disciplines: Disciplines[]
-};
+export type FormDiscipline = Disciplines[];
 
 export type Disciplines = {
-  discipline: string;
-  teacher: string;
-  hours: Dayjs | null;
+  curriculumId: number;
+  name: string;
+  teacherId: number;
+  hours: number;
 };
 
 export type StepProps = {
@@ -27,17 +25,26 @@ export type StepProps = {
   step1: React.ReactNode;
   step2: React.ReactNode;
   onSubmit: () => void;
-  isValid: boolean;
+  isValid: boolean[];
+  isLoading: boolean;
 };
 
 export type FormCurriculum = {
-  specialization: string;
-  curriculum: string;
+  courseId: number;
+  name: string;
 };
 
 export type FormTeacher = {
   name: string;
   email: string;
+  personType: number;
   cpf?: string;
   birthDate?: Dayjs | null;
 };
+
+export interface CurriculomResponseProps {
+  id: number;
+  name: string;
+  courseId: number;
+  course: string;
+}

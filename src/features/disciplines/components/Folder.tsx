@@ -14,7 +14,7 @@ export const generateColor = () => {
 };
 const Folder: React.FC<{
   discipline: {
-    discipline: string;
+    name: string;
     id: number;
   };
 }> = ({ discipline }) => {
@@ -26,7 +26,7 @@ const Folder: React.FC<{
         <S.Left $cardColor={color} />
         <S.Upper $cardColor={color} />
         <S.Content $cardColor={color}>
-          <Typography>{discipline.discipline}</Typography>
+          <Typography>{discipline.name}</Typography>
         </S.Content>
       </S.Container>
     </Link>

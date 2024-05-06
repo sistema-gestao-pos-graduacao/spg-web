@@ -40,7 +40,7 @@ export const MainScreen = {
     align-content: flex-start;
     flex-wrap: wrap;
     flex: 1;
-    margin-top: 0.5rem;
+    margin: 0.5rem 0;
     background-color: ${({ theme }) => theme.white};
     gap: 1rem;
     overflow: auto;
@@ -54,9 +54,9 @@ export const MainScreen = {
   `,
 };
 
-export const CircularLoadingContent = styled.div`
+export const CircularLoadingContent = styled.div<{ width?: string }>`
   display: flex;
-  width: 100vw;
+  width: ${({ width }) => width ?? '100vw'};
   height: 100vh;
   align-items: center;
   justify-content: center;
@@ -85,4 +85,12 @@ export const ToastError = styled.span`
   align-items: center;
   border-radius: 0.5rem;
   gap: 1rem;
+`;
+
+export const CustomModalLoading = styled.span`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  flex-direction: column;
 `;

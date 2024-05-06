@@ -13,7 +13,7 @@ import {
   InputAdornment,
   IconButton,
 } from '@mui/material';
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import { HttpMethods, Themes } from '../../shared/Shared.consts';
 import { Link, useNavigate } from 'react-router-dom';
 import { FormValues, LoginCardProps } from '../Login.types';
@@ -22,17 +22,22 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useState } from 'react';
-import { LOGIN_ROUTE } from '../../shared/RoutesURL';
+import { CONTEXT_ROUTE, LOGIN_ROUTE } from '../../shared/RoutesURL';
 import useApi from '../../shared/useApi';
+import { ContextProps, ContextResponseProps } from '../../shared/Shared.types';
+import { GlobalContext } from '../../shared/Context';
 
 const LoginCard = ({ setLogged }: LoginCardProps) => {
   const navigate = useNavigate();
+  const { setUserLogged } = useContext<ContextProps>(GlobalContext);
 
   const [showPassword, setShowPassword] = useState(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
-  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleMouseDownPassword = (
+    event: React.MouseEvent<HTMLButtonElement>,
+  ) => {
     event.preventDefault();
   };
 
@@ -58,11 +63,23 @@ const LoginCard = ({ setLogged }: LoginCardProps) => {
     },
   );
 
+  const {
+    data,
+    isLoading: contextLoading,
+    isSuccess: contextSuccess,
+    refetch: contextRefetch,
+  } = useApi<ContextResponseProps>(CONTEXT_ROUTE, HttpMethods.GET, false);
+
   useEffect(() => {
-    if (isSuccess) {
+    if (isSuccess && data && contextSuccess) {
+      setUserLogged(data);
       setLogged(true);
       navigate('/');
     }
+  }, [contextSuccess]);
+
+  useEffect(() => {
+    if (isSuccess) contextRefetch();
   }, [isSuccess]);
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
@@ -106,13 +123,16 @@ const LoginCard = ({ setLogged }: LoginCardProps) => {
               helperText={errors.username?.message}
               error={!!errors.username?.message}
             />
-            <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+          </FormControl>
+          <FormControl sx={{ width: '100%' }}>
+            <InputLabel htmlFor="outlined-adornment-password">
+              Password
+            </InputLabel>
             <OutlinedInput
               id="outlined-adornment-password"
               type={showPassword ? 'text' : 'password'}
               {...register('password', { required: 'Password is required' })}
               error={!!errors.password?.message}
-              style={{ paddingBottom: 10 }}
               endAdornment={
                 <InputAdornment position="end">
                   <IconButton
@@ -159,7 +179,9 @@ const LoginCard = ({ setLogged }: LoginCardProps) => {
             }}
             type="submit"
           >
-            {isLoading && <CircularProgress size={'1rem'} color="secondary" />}
+            {(isLoading || contextLoading) && (
+              <CircularProgress size={'1rem'} color="secondary" />
+            )}
             <Typography variant="caption">{t('login.LOGINBUTTON')}</Typography>
           </Button>
           <Button
