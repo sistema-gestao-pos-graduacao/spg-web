@@ -17,11 +17,14 @@ const Folder: React.FC<{
     name: string;
     id: number;
   };
-}> = ({ discipline }) => {
+  classScreen: boolean;
+}> = ({ discipline, classScreen }) => {
   const color = generateColor();
 
   return (
-    <Link to={`disciplina/${discipline.id}`}>
+    <Link
+      to={classScreen ? String(discipline.id) : `disciplina/${discipline.id}`}
+    >
       <S.Container>
         <S.Left $cardColor={color} />
         <S.Upper $cardColor={color} />

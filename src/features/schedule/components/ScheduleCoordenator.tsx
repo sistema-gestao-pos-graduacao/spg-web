@@ -146,6 +146,8 @@ const ScheduleCoordenator: React.FC = () => {
     if (deleteItems && deleteItems.length > 0) deleteRefetch();
   };
 
+  console.log('events: ', events);
+
   return (
     <ScheduledContent $isTeacher={false}>
       <MainScreen.Container>

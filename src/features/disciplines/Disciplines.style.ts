@@ -56,7 +56,7 @@ export const Folder = {
     background-color: ${({ $cardColor }) => $cardColor};
   `,
 
-  fieldText: styled.span`
+  FieldText: styled.span`
     display: flex;
     gap: 0.2rem;
   `,

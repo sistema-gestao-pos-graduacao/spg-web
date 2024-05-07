@@ -74,6 +74,7 @@ const App: React.FC = () => {
         <Home setLogged={setLogged}>
           <Switch>
             <Route path="/" element={<Disciplines />} />
+            <Route path="/:id" element={<Disciplines />} />
             <Route path="/disciplina/:id" element={<DisciplinesDetails />} />
             <Route path="/requerimentos" element={<Requirements />} />
             <Route path="/chat" element={<Chat />} />

@@ -1,5 +1,6 @@
 const PtBr = {
   DISCIPLINES: 'DISCIPLINAS',
+  CLASSES: 'TURMAS',
   ACTIVES_CLASSES: 'Turmas Ativas: ',
   PERIOD: 'Período de referência: ',
   TEACHER: 'Professor',
