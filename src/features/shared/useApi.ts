@@ -42,7 +42,7 @@ const useApi = <T>(
     }
   };
 
-  const { data, isLoading, isError, refetch, isSuccess, isFetching } =
+  const { data, isLoading, isError, refetch, remove, isSuccess, isFetching } =
     useQuery<T>([`${route}-${method}`, {}], fetchData, {
       enabled,
       retry: false,
@@ -56,6 +56,7 @@ const useApi = <T>(
     isSuccess,
     isLoading: isLoading || isFetching,
     isError,
+    remove,
     refetch,
   };
 };
