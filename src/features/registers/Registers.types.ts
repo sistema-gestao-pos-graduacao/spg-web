@@ -42,9 +42,13 @@ export type FormTeacher = {
   birthDate?: Dayjs | null;
 };
 
-export interface CurriculomResponseProps {
+export type CurriculomResponseProps = {
   id: number;
   name: string;
   courseId: number;
   course: string;
+}
+
+export type FormClass = {
+  courseId: number;
 }

@@ -38,6 +38,7 @@ const Discipline = lazy(
   () => import('./features/registers/components/Discipline'),
 );
 const Teacher = lazy(() => import('./features/registers/components/Teacher'));
+const Class = lazy(() => import('./features/registers/components/Class'));  
 
 const theme = createTheme({
   palette: {
@@ -84,6 +85,7 @@ const App: React.FC = () => {
             <Route path="/matriz" element={<Curriculum />} />
             <Route path="/disciplinas" element={<Discipline />} />
             <Route path="/professor" element={<Teacher />} />
+            <Route path="/turma" element={<Class />} />
           </Switch>
         </Home>
       )}

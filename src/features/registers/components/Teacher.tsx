@@ -40,6 +40,7 @@ const Registers = () => {
     isLoading: personLoading,
     isSuccess,
     refetch,
+    remove,
   } = useApi(PERSONS_ROUTE, HttpMethods.POST, false, {
     ...watch(),
     birthDate: format(
@@ -58,6 +59,7 @@ const Registers = () => {
     if (isSuccess) {
       setOpen(true);
       reset();
+      remove()
     }
   }, [isSuccess]);
 
@@ -65,7 +67,7 @@ const Registers = () => {
     <MainScreen.Container>
       <MainScreen.Title>
         <Typography fontWeight={700} color="primary">
-          {t('registers.TITLEPROFESSOR')}
+          {t('registers.TITLETEACHER')}
         </Typography>
       </MainScreen.Title>
       <MainScreen.Content
@@ -85,7 +87,7 @@ const Registers = () => {
         >
           <PersonAddIcon sx={{ color: '#074458', fontSize: '8rem' }} />
           <Typography fontWeight={700} color="primary" variant="h5">
-            {t('registers.SUBTITLEPROFESSOR')}
+            {t('registers.SUBTITLETEACHER')}
           </Typography>
         </Grid>
 
@@ -164,8 +166,8 @@ const Registers = () => {
 
         <CustomModal
           open={open}
-          title={t('registers.SUCCESSTITLE')}
-          message={t('registers.SUCCESSMESSAGE')}
+          title={t('registers.SUCCESSTITLETEACHER')}
+          message={t('registers.SUCCESSMESSAGETEACHER')}
           onClose={() => setOpen(false)}
           redirect="cadastros"
         />

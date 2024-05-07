@@ -1,50 +1,65 @@
 import {
-  Typography,
-  Grid,
-  InputLabel,
-  Select,
-  MenuItem,
-  TextField,
-  FormControl,
+  Box,
   Button,
   CircularProgress,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+  Typography,
 } from '@mui/material';
 import { MainScreen } from '../../shared/Shared.style';
 import { useTranslation } from 'react-i18next';
-import ArticleIcon from '@mui/icons-material/Article';
+import SchoolIcon from '@mui/icons-material/School';
 import { useForm } from 'react-hook-form';
-import { FormCurriculum } from '../Registers.types';
-import { Box } from '@mui/system';
-import CustomModal from '../../shared/components/CustomModal';
+import { CurriculomResponseProps, FormClass } from '../Registers.types';
 import { useEffect, useState } from 'react';
+import CustomModal from '../../shared/components/CustomModal';
 import useApi from '../../shared/useApi';
+import {
+  COURSES_ROUTE,
+  CURRICULUM_ROUTE,
+  SUBJECTS_ROUTE,
+} from '../../shared/RoutesURL';
 import { HttpMethods } from '../../shared/Shared.consts';
-import { COURSES_ROUTE, CURRICULUM_ROUTE } from '../../shared/RoutesURL';
 import { CoursesResponseProps } from '../../shared/Shared.types';
 
-const Curriculum = () => {
+const Registers = () => {
   const { t } = useTranslation();
 
+  const [rows, setRows] = useState([{}]);
   const [open, setOpen] = useState(false);
+  const [curriculumId, setCurriculumId] = useState<number>();
 
   const {
     handleSubmit,
     register,
     reset,
-    formState: { errors, isValid },
     watch,
-  } = useForm<FormCurriculum>();
+    formState: { errors, isValid },
+  } = useForm<FormClass>();
+
+  const watchSpecialization = watch("courseId")
 
   const {
-    isLoading: curriculumLoading,
+    isLoading: classLoading,
     isSuccess,
     refetch,
     remove,
-  } = useApi(CURRICULUM_ROUTE, HttpMethods.POST, false, watch());
+  } = useApi(
+    SUBJECTS_ROUTE + '/SaveAll',
+    HttpMethods.POST,
+    false, watch()
+  );
 
   const { data: courseData, isLoading: courseLoading } = useApi<
     CoursesResponseProps[]
   >(COURSES_ROUTE, HttpMethods.GET);
+
+  const { data: curriculumData, isLoading: curriculumLoading } = useApi<
+    CurriculomResponseProps[]
+  >(CURRICULUM_ROUTE, HttpMethods.GET);
 
   const onSubmit = () => {
     refetch();
@@ -62,7 +77,7 @@ const Curriculum = () => {
     <MainScreen.Container>
       <MainScreen.Title>
         <Typography fontWeight={700} color="primary">
-          {t('registers.TITLEMATRIZ')}
+          {t('registers.TITLECLASS')}
         </Typography>
       </MainScreen.Title>
       <MainScreen.Content
@@ -80,9 +95,9 @@ const Curriculum = () => {
             marginBottom: '2rem',
           }}
         >
-          <ArticleIcon sx={{ color: '#074458', fontSize: '8rem' }} />
+          <SchoolIcon sx={{ color: '#074458', fontSize: '8rem' }} />
           <Typography fontWeight={700} color="primary" variant="h5">
-            {t('registers.SUBTITLEMATRIZ')}
+            {t('registers.SUBTITLECLASS')}
           </Typography>
         </Grid>
         <Grid
@@ -92,16 +107,17 @@ const Curriculum = () => {
             alignItems: 'center',
           }}
         >
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <FormControl
-              fullWidth
-              sx={{ marginTop: '1rem' }}
-              disabled={courseLoading}
-            >
-              <FormControl>
+          <form onSubmit={handleSubmit(onSubmit)} style={{ minWidth: '25rem' }}>
+            <FormControl>
+              <FormControl
+                fullWidth
+                sx={{ marginTop: '1rem' }}
+                disabled={courseLoading}>
+
                 <InputLabel id={`specialization-label`}>
                   Especialização
                 </InputLabel>
+
                 <Select
                   labelId={`specialization-label`}
                   id={`specialization-select`}
@@ -120,16 +136,31 @@ const Curriculum = () => {
                 </Select>
               </FormControl>
 
-              <TextField
-                label="Nome da Matriz"
-                type="text"
-                {...register('name', {
-                  required: 'Nome da Matriz is required',
-                })}
-                sx={{ marginBottom: '1rem', width: '20rem' }}
-                error={!!errors.name?.message}
-                defaultValue=""
-              />
+              <FormControl
+                fullWidth
+                sx={{ marginBottom: '1rem' }}
+                disabled={curriculumLoading || !watchSpecialization}
+              >
+                <InputLabel id="curriculum-label">
+                  Matriz Curricular
+                </InputLabel>
+                <Select
+                  labelId="curriculum-label"
+                  id="curriculum-select"
+                  onChange={({ target }) =>
+                    setCurriculumId(Number(target.value))
+                  }
+                  label="Matriz Curricular"
+                  value={curriculumId}
+                  MenuProps={{ PaperProps: { sx: { maxHeight: '10rem' } } }}
+                >
+                  {curriculumData?.map(({ id, name }) => (
+                    <MenuItem key={id} value={id}>
+                      {name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
 
               <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                 <Button
@@ -143,7 +174,7 @@ const Curriculum = () => {
                   }}
                   type="submit"
                 >
-                  {curriculumLoading && (
+                  {classLoading && (
                     <CircularProgress size={'1rem'} color="secondary" />
                   )}
                   <Typography variant="caption">Salvar</Typography>
@@ -155,8 +186,8 @@ const Curriculum = () => {
 
         <CustomModal
           open={open}
-          title={t('registers.SUCCESSTITLEMATRIZ')}
-          message={t('registers.SUCCESSMESSAGEMATRIZ')}
+          title={t('registers.SUCCESSTITLECLASS')}
+          message={t('registers.SUCCESSMESSAGECLASS')}
           onClose={() => setOpen(false)}
           redirect="cadastros"
         />
@@ -165,4 +196,4 @@ const Curriculum = () => {
   );
 };
 
-export default Curriculum;
+export default Registers;

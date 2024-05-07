@@ -32,7 +32,7 @@ const Registers = () => {
 
   const [rows, setRows] = useState([{}]);
   const [open, setOpen] = useState(false);
-  const [curriculumId, setCurriculumId] = useState<number>();
+  const [curriculumId, setCurriculumId] = useState<number | null>(null);
   const steps = ['Selecionar Matriz', 'Adicionar Disciplinas'];
 
   const {
@@ -57,6 +57,7 @@ const Registers = () => {
     isLoading: subjectLoading,
     isSuccess,
     refetch,
+    remove,
   } = useApi(
     SUBJECTS_ROUTE + '/SaveAll',
     HttpMethods.POST,
@@ -84,6 +85,7 @@ const Registers = () => {
     if (isSuccess) {
       setOpen(true);
       reset();
+      remove();
     }
   }, [isSuccess]);
 
@@ -91,7 +93,7 @@ const Registers = () => {
     <MainScreen.Container>
       <MainScreen.Title>
         <Typography fontWeight={700} color="primary">
-          {t('registers.TITLEDISCIPLINAS')}
+          {t('registers.TITLEDISCIPLINES')}
         </Typography>
       </MainScreen.Title>
       <MainScreen.Content
@@ -111,7 +113,7 @@ const Registers = () => {
         >
           <SchoolIcon sx={{ color: '#074458', fontSize: '8rem' }} />
           <Typography fontWeight={700} color="primary" variant="h5">
-            {t('registers.SUBTITLEDISCIPLINAS')}
+            {t('registers.SUBTITLEDISCIPLINES')}
           </Typography>
         </Grid>
         <Grid
@@ -143,7 +145,7 @@ const Registers = () => {
                       setCurriculumId(Number(target.value))
                     }
                     label="Matriz Curricular"
-                    defaultValue={''}
+                    value={curriculumId}
                     MenuProps={{ PaperProps: { sx: { maxHeight: '10rem' } } }}
                   >
                     {curriculumData?.map(({ id, name }) => (
@@ -239,8 +241,8 @@ const Registers = () => {
 
         <CustomModal
           open={open}
-          title={t('registers.SUCCESSTITLE')}
-          message={t('registers.SUCCESSMESSAGE')}
+          title={t('registers.SUCCESSTITLEDISCIPLINES')}
+          message={t('registers.SUCCESSMESSAGEDISCIPLINES')}
           onClose={() => setOpen(false)}
           redirect="cadastros"
         />

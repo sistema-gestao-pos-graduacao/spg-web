@@ -16,25 +16,31 @@ const Registers = () => {
         {t('registers.TITLE')}
       </Typography>
     </MainScreen.Title>
-    <MainScreen.Content style={{ alignContent: 'center', justifyContent: 'center' }}>
+    <MainScreen.Content style={{ justifyContent: 'center' }}>
       <RegisterCard 
         icon={ArticleIcon} 
-        title={t('registers.CARDTITLE1')} 
-        description={t('registers.CARDDESCRIPTION1')}
+        title={t('registers.CARDTITLEMATRIZ')} 
+        description={t('registers.CARDDESCRIPTIONMATRIZ')}
         url='matriz'
-        />
+      />
       <RegisterCard
         icon={SchoolIcon}
-        title={t('registers.CARDTITLE2')}
-        description={t('registers.CARDDESCRIPTION2')}
+        title={t('registers.CARDTITLEDISCIPLINES')}
+        description={t('registers.CARDDESCRIPTIONDISCIPLINES')}
         url='disciplinas'
-        />
+      />
       <RegisterCard 
         icon={PersonAddIcon}
-        title={t('registers.CARDTITLE3')}
-        description={t('registers.CARDDESCRIPTION3')}
+        title={t('registers.CARDTITLETEACHER')}
+        description={t('registers.CARDDESCRIPTIONTEACHER')}
         url='professor'
-        />
+      />
+      <RegisterCard 
+        icon={PersonAddIcon}  
+        title={t('registers.CARDTITLECLASS')}
+        description={t('registers.CARDDESCRIPTIONCLASS')}
+        url='turma'
+      />
     </MainScreen.Content>
   </MainScreen.Container>
   );
