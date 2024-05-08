@@ -12,9 +12,8 @@ import { MainScreen } from '../../shared/Shared.style';
 import { useTranslation } from 'react-i18next';
 import SchoolIcon from '@mui/icons-material/School';
 import CustomStep from './Step';
-import { useForm } from 'react-hook-form';
 import { CurriculomResponseProps, FormDiscipline } from '../Registers.types';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import CustomModal from '../../shared/components/CustomModal';
@@ -30,28 +29,42 @@ import { PersonResponseProps } from '../../shared/Shared.types';
 const Registers = () => {
   const { t } = useTranslation();
 
-  const [rows, setRows] = useState([{}]);
   const [open, setOpen] = useState(false);
   const [curriculumId, setCurriculumId] = useState<number | null>(null);
   const steps = ['Selecionar Matriz', 'Adicionar Disciplinas'];
-
-  const {
-    handleSubmit,
-    register,
-    reset,
-    watch,
-    formState: { errors, isValid },
-  } = useForm<FormDiscipline>();
+  const [formInputs, setFormInputs] = useState<FormDiscipline>([
+    {
+      name: '',
+      teacherId: undefined,
+      hours: undefined,
+    },
+  ]);
 
   const handleAddRow = () => {
-    setRows([...rows, {}]);
+    setFormInputs((prev) => [
+      ...prev,
+      {
+        name: '',
+        teacherId: undefined,
+        hours: undefined,
+      },
+    ]);
   };
 
-  const handleDeleteRow = (index: number) => {
-    const updatedRows = [...rows];
-    updatedRows.splice(index, 1);
-    setRows(updatedRows);
+  const handleDeleteRow = (fieldindex: number) => {
+    setFormInputs(formInputs.filter((_, index) => fieldindex !== index));
   };
+
+  const editFieldHandler = useCallback(
+    (option: number | string, index: number, key: string) => {
+      const obj = [...formInputs];
+      const field = obj[index];
+      const x = { ...field, [key]: option };
+      obj[index] = x;
+      setFormInputs(obj);
+    },
+    [formInputs],
+  );
 
   const {
     isLoading: subjectLoading,
@@ -62,7 +75,7 @@ const Registers = () => {
     SUBJECTS_ROUTE + '/SaveAll',
     HttpMethods.POST,
     false,
-    Object.values(watch()).map((item) => ({
+    formInputs.map((item) => ({
       ...item,
       curriculumId,
       hours: Number(item.hours),
@@ -84,7 +97,6 @@ const Registers = () => {
   useEffect(() => {
     if (isSuccess) {
       setOpen(true);
-      reset();
       remove();
     }
   }, [isSuccess]);
@@ -111,7 +123,7 @@ const Registers = () => {
             marginBottom: '2rem',
           }}
         >
-          <SchoolIcon sx={{ color: '#074458', fontSize: '8rem' }} />
+          <SchoolIcon color="primary" sx={{ fontSize: '8rem' }} />
           <Typography fontWeight={700} color="primary" variant="h5">
             {t('registers.SUBTITLEDISCIPLINES')}
           </Typography>
@@ -126,8 +138,13 @@ const Registers = () => {
           <CustomStep
             steps={steps}
             isLoading={subjectLoading}
-            onSubmit={handleSubmit(onSubmit)}
-            isValid={[!!curriculumId, isValid]}
+            onSubmit={onSubmit}
+            isValid={[
+              !!curriculumId,
+              formInputs.every(
+                ({ hours, name, teacherId }) => name && teacherId && hours,
+              ),
+            ]}
             step1={
               <form style={{ minWidth: '25rem' }}>
                 <FormControl
@@ -158,21 +175,22 @@ const Registers = () => {
               </form>
             }
             step2={
-              <form onSubmit={handleSubmit(onSubmit)}>
-                {rows.map((_, index) => (
+              <form>
+                {formInputs.map((_, index) => (
                   <div key={index}>
                     <FormControl
                       fullWidth
                       sx={{ marginTop: '1rem', display: 'inline-block' }}
                     >
                       <TextField
+                        key={'name' + index}
                         label="Nome da Disciplina"
-                        {...register(`${index}.name`, {
-                          required: 'Disciplinas é obrigatório',
-                        })}
-                        error={!!errors[index]?.name?.message}
+                        onChange={(e) =>
+                          editFieldHandler(e.target.value, index, 'name')
+                        }
                         sx={{ marginRight: '1rem', width: '20rem' }}
                         defaultValue=""
+                        value={formInputs[index].name}
                       />
 
                       <FormControl disabled={personLoading}>
@@ -180,14 +198,20 @@ const Registers = () => {
                           Professor
                         </InputLabel>
                         <Select
+                          key={'teacher' + index}
                           labelId={`teacher-label-${index}`}
-                          {...register(`${index}.teacherId`, {
-                            required: 'Professor é obrigatório',
-                          })}
+                          value={formInputs[index].teacherId ?? ''}
+                          type="number"
                           label="Professor"
-                          error={!!errors[index]?.teacherId?.message}
+                          onChange={(e) =>
+                            editFieldHandler(
+                              Number(e.target.value),
+                              index,
+                              'teacherId',
+                            )
+                          }
                           sx={{ marginRight: '1rem', width: '15rem' }}
-                          defaultValue=""
+                          defaultValue={0}
                         >
                           {personData?.map(({ id, name }) => (
                             <MenuItem key={id} value={id}>
@@ -198,38 +222,37 @@ const Registers = () => {
                       </FormControl>
 
                       <TextField
-                        label="Horas de Aula"
-                        {...register(`${index}.hours`, {
-                          required: 'Horas é obrigatório',
-                        })}
-                        error={!!errors[index]?.hours?.message}
-                        sx={{ marginRight: '1rem', width: '10rem' }}
-                        defaultValue=""
+                        key={'hours' + index}
+                        label="Número de Aulas"
+                        value={formInputs[index].hours ?? ''}
                         type="number"
+                        onChange={(e) =>
+                          editFieldHandler(e.target.value, index, 'hours')
+                        }
+                        sx={{ marginRight: '1rem', width: '11rem' }}
+                        defaultValue=""
                         InputProps={{ inputProps: { min: 1 } }}
                       />
 
-                      {index === rows.length - 1 && (
-                        <>
-                          {rows.length > 1 && (
-                            <IconButton
-                              type="button"
-                              sx={{ p: '10px' }}
-                              onClick={() => handleDeleteRow(index)}
-                              aria-label="search"
-                            >
-                              <DeleteIcon />
-                            </IconButton>
-                          )}
-                          <IconButton
-                            type="button"
-                            sx={{ p: '10px' }}
-                            onClick={handleAddRow}
-                            aria-label="search"
-                          >
-                            <AddCircleIcon />
-                          </IconButton>
-                        </>
+                      {formInputs.length > 1 && (
+                        <IconButton
+                          type="button"
+                          sx={{ p: '10px' }}
+                          onClick={() => handleDeleteRow(index)}
+                          aria-label="search"
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      )}
+                      {index === formInputs.length - 1 && (
+                        <IconButton
+                          type="button"
+                          sx={{ p: '10px' }}
+                          onClick={handleAddRow}
+                          aria-label="search"
+                        >
+                          <AddCircleIcon />
+                        </IconButton>
                       )}
                     </FormControl>
                   </div>

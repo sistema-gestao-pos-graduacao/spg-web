@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { MainScreen } from '../../shared/Shared.style';
 import { Button, CircularProgress, Skeleton, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
@@ -14,6 +14,7 @@ import useApi from '../../shared/useApi';
 import { SCHEDULE_ROUTE, SUBJECTS_ROUTE } from '../../shared/RoutesURL';
 import ScheduleTableCoordenator from './ScheduleTableCoordenator';
 import moment from 'moment';
+import FilterField from '../../shared/components/FilterField';
 
 const ScheduleCoordenator: React.FC = () => {
   const { t } = useTranslation();
@@ -22,18 +23,58 @@ const ScheduleCoordenator: React.FC = () => {
     useState<Partial<EventProps> | null>(null);
   const [events, setEvents] = useState<EventProps[]>([]);
   const [manualEvents, setManualEvents] = useState<ManualEventsProps[]>([]);
+  const [filteredTeacher, setFilteredTeacher] = useState<number[]>([]);
+  const [filteredSubjects, setFilteredSubjects] = useState<number[]>([]);
+  const [filteredClasses, setFilteredClasses] = useState<number[]>([]);
+
+  const queryFilter = useCallback(
+    (route: string, isClass?: boolean) => {
+      if (
+        filteredSubjects.length > 0 ||
+        filteredTeacher.length > 0 ||
+        filteredClasses.length > 0
+      ) {
+        const subjectFilter =
+          filteredSubjects.length > 0
+            ? `${isClass ? 'subjectId' : 'id'}=${filteredSubjects.join('&id=')}`
+            : '';
+        const classesFilter =
+          filteredClasses.length > 0
+            ? `id=${filteredClasses.join('&id=')}`
+            : '';
+        const teacherFilter =
+          filteredTeacher.length > 0
+            ? `teacherId=${filteredTeacher.join('&id=')}`
+            : '';
+        const filters = [subjectFilter, classesFilter, teacherFilter]
+          .filter(Boolean)
+          .join('&');
+        const queryParams = filters ? `?${filters}` : '';
+        return `${route}${queryParams}`;
+      }
+      return route;
+    },
+    [filteredSubjects, filteredTeacher, filteredClasses],
+  );
 
   const {
     data: disciplinesData,
     isLoading,
     refetch: disciplineRefetch,
-  } = useApi<SubjectsResponseProps[]>(SUBJECTS_ROUTE, HttpMethods.GET, false);
+  } = useApi<SubjectsResponseProps[]>(
+    queryFilter(SUBJECTS_ROUTE),
+    HttpMethods.GET,
+    false,
+  );
 
   const {
     data: scheduleGetData,
     isLoading: scheduleGetLoading,
     refetch: scheduleGetRefetch,
-  } = useApi<ScheduleResponseProps[]>(SCHEDULE_ROUTE, HttpMethods.GET);
+  } = useApi<ScheduleResponseProps[]>(
+    queryFilter(SCHEDULE_ROUTE, true),
+    HttpMethods.GET,
+  );
 
   const deleteItems = useMemo(
     () =>
@@ -92,13 +133,19 @@ const ScheduleCoordenator: React.FC = () => {
 
   useEffect(() => {
     disciplineRefetch();
-  }, []);
+  }, [filteredSubjects, filteredTeacher, filteredClasses]);
 
   useEffect(() => {
     if (!scheduleLoading && !deleteLoading) {
       scheduleGetRefetch();
     }
-  }, [scheduleLoading, deleteLoading]);
+  }, [
+    scheduleLoading,
+    deleteLoading,
+    filteredSubjects,
+    filteredTeacher,
+    filteredClasses,
+  ]);
 
   const scheduledItems = useMemo(
     () =>
@@ -146,8 +193,6 @@ const ScheduleCoordenator: React.FC = () => {
     if (deleteItems && deleteItems.length > 0) deleteRefetch();
   };
 
-  console.log('events: ', events);
-
   return (
     <ScheduledContent $isTeacher={false}>
       <MainScreen.Container>
@@ -168,6 +213,15 @@ const ScheduleCoordenator: React.FC = () => {
             {t('schedule.SAVE')}
           </Button>
         </MainScreen.Title>
+        <FilterField
+          classScreen
+          filteredTeacher={filteredTeacher}
+          setFilteredTeacher={setFilteredTeacher}
+          filteredSubjects={filteredSubjects}
+          setFilteredSubjects={setFilteredSubjects}
+          filteredClasses={filteredClasses}
+          setFilteredClasses={setFilteredClasses}
+        />
         <MainScreen.Content>
           {isLoading || scheduleGetLoading ? (
             <Skeleton

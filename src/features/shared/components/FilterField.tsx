@@ -20,7 +20,6 @@ import { GlobalContext } from '../Context';
 
 const FilterField: React.FC<{
   classScreen: boolean;
-
   filteredSubjects: number[];
   setFilteredSubjects: StateAction<number[]>;
   filteredTeacher: number[];
@@ -29,7 +28,6 @@ const FilterField: React.FC<{
   setFilteredClasses: StateAction<number[]>;
 }> = ({
   classScreen,
-
   filteredTeacher,
   filteredSubjects,
   filteredClasses,

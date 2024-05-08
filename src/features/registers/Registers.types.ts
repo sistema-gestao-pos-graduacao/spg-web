@@ -14,10 +14,9 @@ export type RegisterCardProps = {
 export type FormDiscipline = Disciplines[];
 
 export type Disciplines = {
-  curriculumId: number;
-  name: string;
-  teacherId: number;
-  hours: number;
+  name?: string;
+  teacherId?: number;
+  hours?: number;
 };
 
 export type StepProps = {
@@ -47,8 +46,8 @@ export type CurriculomResponseProps = {
   name: string;
   courseId: number;
   course: string;
-}
+};
 
 export type FormClass = {
   courseId: number;
-}
+};
