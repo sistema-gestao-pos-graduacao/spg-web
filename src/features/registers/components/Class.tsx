@@ -28,7 +28,6 @@ import { CoursesResponseProps } from '../../shared/Shared.types';
 const Registers = () => {
   const { t } = useTranslation();
 
-  const [rows, setRows] = useState([{}]);
   const [open, setOpen] = useState(false);
   const [curriculumId, setCurriculumId] = useState<number>();
 
@@ -40,18 +39,14 @@ const Registers = () => {
     formState: { errors, isValid },
   } = useForm<FormClass>();
 
-  const watchSpecialization = watch("courseId")
+  const watchSpecialization = watch('courseId');
 
   const {
     isLoading: classLoading,
     isSuccess,
     refetch,
     remove,
-  } = useApi(
-    SUBJECTS_ROUTE + '/SaveAll',
-    HttpMethods.POST,
-    false, watch()
-  );
+  } = useApi(SUBJECTS_ROUTE + '/SaveAll', HttpMethods.POST, false, watch());
 
   const { data: courseData, isLoading: courseLoading } = useApi<
     CoursesResponseProps[]
@@ -112,8 +107,8 @@ const Registers = () => {
               <FormControl
                 fullWidth
                 sx={{ marginTop: '1rem' }}
-                disabled={courseLoading}>
-
+                disabled={courseLoading}
+              >
                 <InputLabel id={`specialization-label`}>
                   Especialização
                 </InputLabel>
@@ -131,7 +126,9 @@ const Registers = () => {
                   MenuProps={{ PaperProps: { sx: { maxHeight: '10rem' } } }}
                 >
                   {courseData?.map(({ id, name }) => (
-                    <MenuItem key={id} value={id}>{name}</MenuItem>
+                    <MenuItem key={id} value={id}>
+                      {name}
+                    </MenuItem>
                   ))}
                 </Select>
               </FormControl>
@@ -141,9 +138,7 @@ const Registers = () => {
                 sx={{ marginBottom: '1rem' }}
                 disabled={curriculumLoading || !watchSpecialization}
               >
-                <InputLabel id="curriculum-label">
-                  Matriz Curricular
-                </InputLabel>
+                <InputLabel id="curriculum-label">Matriz Curricular</InputLabel>
                 <Select
                   labelId="curriculum-label"
                   id="curriculum-select"

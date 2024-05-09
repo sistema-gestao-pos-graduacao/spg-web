@@ -5,6 +5,9 @@ const PtBr = {
   TIMEOUT_MESSAGE:
     'Ocorreu um erro ao tentar se comunicar com o servidor. Por favor, tente novamente mais tarde.',
   LOADING: 'Carregando...',
+  CLASSES: 'Turmas',
+  SUBJECTS: 'Disciplinas',
+  TEACHERS: 'Professores',
 };
 
 export default PtBr;

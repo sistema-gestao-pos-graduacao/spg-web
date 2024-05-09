@@ -12,9 +12,8 @@ import { MainScreen } from '../../shared/Shared.style';
 import { useTranslation } from 'react-i18next';
 import SchoolIcon from '@mui/icons-material/School';
 import CustomStep from './Step';
-import { useForm } from 'react-hook-form';
 import { CurriculomResponseProps, FormDiscipline } from '../Registers.types';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import CustomModal from '../../shared/components/CustomModal';
@@ -25,49 +24,27 @@ import {
   SUBJECTS_ROUTE,
 } from '../../shared/RoutesURL';
 import { HttpMethods } from '../../shared/Shared.consts';
-import { PersonResponseProps } from '../../shared/Shared.types';
+import {
+  PersonResponseProps,
+  SubjectsResponseProps,
+} from '../../shared/Shared.types';
 
 const Registers = () => {
   const { t } = useTranslation();
-
-  const [rows, setRows] = useState([{}]);
   const [open, setOpen] = useState(false);
-  const [curriculumId, setCurriculumId] = useState<number | null>(null);
+  const [curriculumId, setCurriculumId] = useState<string | null>('');
+  const [activeStep, setActiveStep] = useState(0);
   const steps = ['Selecionar Matriz', 'Adicionar Disciplinas'];
 
-  const {
-    handleSubmit,
-    register,
-    reset,
-    watch,
-    formState: { errors, isValid },
-  } = useForm<FormDiscipline>();
+  const defaultInput = [
+    {
+      name: '',
+      teacherId: undefined,
+      hours: undefined,
+    },
+  ];
 
-  const handleAddRow = () => {
-    setRows([...rows, {}]);
-  };
-
-  const handleDeleteRow = (index: number) => {
-    const updatedRows = [...rows];
-    updatedRows.splice(index, 1);
-    setRows(updatedRows);
-  };
-
-  const {
-    isLoading: subjectLoading,
-    isSuccess,
-    refetch,
-    remove,
-  } = useApi(
-    SUBJECTS_ROUTE + '/SaveAll',
-    HttpMethods.POST,
-    false,
-    Object.values(watch()).map((item) => ({
-      ...item,
-      curriculumId,
-      hours: Number(item.hours),
-    })),
-  );
+  const [formInputs, setFormInputs] = useState<FormDiscipline>(defaultInput);
 
   const { data: curriculumData, isLoading: curriculumLoading } = useApi<
     CurriculomResponseProps[]
@@ -77,17 +54,103 @@ const Registers = () => {
     PersonResponseProps[]
   >(`${PERSONS_ROUTE}?personType=Teacher`, HttpMethods.GET);
 
+  const { data: subjectData, isLoading: subjectLoading } = useApi<
+    SubjectsResponseProps[]
+  >(
+    `${SUBJECTS_ROUTE}?curriculumId=${curriculumId}`,
+    HttpMethods.GET,
+    !!curriculumId,
+  );
+
+  const formInputFilter = useMemo(
+    () =>
+      formInputs
+        .filter(({ prevId }) => !prevId)
+        .map((item) => ({
+          ...item,
+          curriculumId,
+          hours: Number(item.hours),
+        })),
+    [formInputs],
+  );
+
+  const { isLoading, isSuccess, refetch } = useApi(
+    SUBJECTS_ROUTE + '/SaveAll',
+    HttpMethods.POST,
+    false,
+    formInputFilter,
+  );
+
+  const formInputDelete = useMemo(
+    () =>
+      subjectData
+        ?.filter(({ id }) => !formInputs.find(({ prevId }) => id === prevId))
+        .map(({ id }) => id),
+    [formInputs],
+  );
+
+  const {
+    isLoading: deleteLoading,
+    isSuccess: deleteSuccess,
+    refetch: deleteRefetch,
+  } = useApi(
+    SUBJECTS_ROUTE + '/DeleteAll',
+    HttpMethods.POST,
+    false,
+    formInputDelete,
+  );
+
   const onSubmit = () => {
-    refetch();
+    if (formInputFilter.length > 0) refetch();
+    if (formInputDelete && formInputDelete.length > 0) deleteRefetch();
   };
 
+  const handleAddRow = () => {
+    setFormInputs((prev) => [
+      ...prev,
+      {
+        name: '',
+        teacherId: undefined,
+        hours: undefined,
+      },
+    ]);
+  };
+
+  const handleDeleteRow = (fieldindex: number) => {
+    setFormInputs(formInputs.filter((_, index) => fieldindex !== index));
+  };
+
+  const editFieldHandler = useCallback(
+    (option: number | string, index: number, key: string) => {
+      const obj = [...formInputs];
+      const field = obj[index];
+      const x = { ...field, [key]: option };
+      obj[index] = x;
+      setFormInputs(obj);
+    },
+    [formInputs],
+  );
+
   useEffect(() => {
-    if (isSuccess) {
+    if (isSuccess && deleteSuccess) {
       setOpen(true);
-      reset();
-      remove();
     }
   }, [isSuccess]);
+
+  useEffect(() => {
+    if (subjectData && subjectData.length > 0) {
+      setFormInputs(
+        subjectData.map(({ name, teacherId, hours, id }) => ({
+          prevId: id,
+          name,
+          teacherId: String(teacherId),
+          hours,
+        })),
+      );
+    } else {
+      setFormInputs(defaultInput);
+    }
+  }, [activeStep]);
 
   return (
     <MainScreen.Container>
@@ -111,7 +174,7 @@ const Registers = () => {
             marginBottom: '2rem',
           }}
         >
-          <SchoolIcon sx={{ color: '#074458', fontSize: '8rem' }} />
+          <SchoolIcon color="primary" sx={{ fontSize: '8rem' }} />
           <Typography fontWeight={700} color="primary" variant="h5">
             {t('registers.SUBTITLEDISCIPLINES')}
           </Typography>
@@ -124,10 +187,18 @@ const Registers = () => {
           }}
         >
           <CustomStep
+            activeStep={activeStep}
+            setActiveStep={setActiveStep}
             steps={steps}
-            isLoading={subjectLoading}
-            onSubmit={handleSubmit(onSubmit)}
-            isValid={[!!curriculumId, isValid]}
+            isLoading={isLoading || deleteLoading || subjectLoading}
+            onSubmit={onSubmit}
+            clearForm={() => setFormInputs(defaultInput)}
+            isValid={[
+              !!curriculumId && !subjectLoading,
+              formInputs.every(
+                ({ hours, name, teacherId }) => name && teacherId && hours,
+              ),
+            ]}
             step1={
               <form style={{ minWidth: '25rem' }}>
                 <FormControl
@@ -141,15 +212,14 @@ const Registers = () => {
                   <Select
                     labelId="curriculum-label"
                     id="curriculum-select"
-                    onChange={({ target }) =>
-                      setCurriculumId(Number(target.value))
-                    }
+                    onChange={({ target }) => setCurriculumId(target.value)}
                     label="Matriz Curricular"
                     value={curriculumId}
                     MenuProps={{ PaperProps: { sx: { maxHeight: '10rem' } } }}
+                    defaultValue=""
                   >
                     {curriculumData?.map(({ id, name }) => (
-                      <MenuItem key={id} value={id}>
+                      <MenuItem key={id} value={String(id)}>
                         {name}
                       </MenuItem>
                     ))}
@@ -158,21 +228,25 @@ const Registers = () => {
               </form>
             }
             step2={
-              <form onSubmit={handleSubmit(onSubmit)}>
-                {rows.map((_, index) => (
+              <form>
+                {formInputs.map((_, index) => (
                   <div key={index}>
                     <FormControl
                       fullWidth
-                      sx={{ marginTop: '1rem', display: 'inline-block' }}
+                      sx={{
+                        marginTop: '1rem',
+                        display: 'inline-block',
+                      }}
                     >
                       <TextField
+                        key={'name' + index}
                         label="Nome da Disciplina"
-                        {...register(`${index}.name`, {
-                          required: 'Disciplinas é obrigatório',
-                        })}
-                        error={!!errors[index]?.name?.message}
+                        onChange={(e) =>
+                          editFieldHandler(e.target.value, index, 'name')
+                        }
                         sx={{ marginRight: '1rem', width: '20rem' }}
                         defaultValue=""
+                        value={formInputs[index].name}
                       />
 
                       <FormControl disabled={personLoading}>
@@ -180,17 +254,23 @@ const Registers = () => {
                           Professor
                         </InputLabel>
                         <Select
+                          key={'teacher' + index}
                           labelId={`teacher-label-${index}`}
-                          {...register(`${index}.teacherId`, {
-                            required: 'Professor é obrigatório',
-                          })}
+                          value={formInputs[index].teacherId ?? ''}
+                          type="number"
                           label="Professor"
-                          error={!!errors[index]?.teacherId?.message}
+                          onChange={(e) =>
+                            editFieldHandler(
+                              Number(e.target.value),
+                              index,
+                              'teacherId',
+                            )
+                          }
                           sx={{ marginRight: '1rem', width: '15rem' }}
                           defaultValue=""
                         >
                           {personData?.map(({ id, name }) => (
-                            <MenuItem key={id} value={id}>
+                            <MenuItem key={id} value={String(id)}>
                               {name}
                             </MenuItem>
                           ))}
@@ -198,38 +278,37 @@ const Registers = () => {
                       </FormControl>
 
                       <TextField
-                        label="Horas de Aula"
-                        {...register(`${index}.hours`, {
-                          required: 'Horas é obrigatório',
-                        })}
-                        error={!!errors[index]?.hours?.message}
-                        sx={{ marginRight: '1rem', width: '10rem' }}
-                        defaultValue=""
+                        key={'hours' + index}
+                        label="Número de Aulas"
+                        value={formInputs[index].hours ?? ''}
                         type="number"
+                        onChange={(e) =>
+                          editFieldHandler(e.target.value, index, 'hours')
+                        }
+                        sx={{ marginRight: '1rem', width: '11rem' }}
+                        defaultValue=""
                         InputProps={{ inputProps: { min: 1 } }}
                       />
 
-                      {index === rows.length - 1 && (
-                        <>
-                          {rows.length > 1 && (
-                            <IconButton
-                              type="button"
-                              sx={{ p: '10px' }}
-                              onClick={() => handleDeleteRow(index)}
-                              aria-label="search"
-                            >
-                              <DeleteIcon />
-                            </IconButton>
-                          )}
-                          <IconButton
-                            type="button"
-                            sx={{ p: '10px' }}
-                            onClick={handleAddRow}
-                            aria-label="search"
-                          >
-                            <AddCircleIcon />
-                          </IconButton>
-                        </>
+                      {formInputs.length > 1 && (
+                        <IconButton
+                          type="button"
+                          sx={{ p: '10px' }}
+                          onClick={() => handleDeleteRow(index)}
+                          aria-label="search"
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      )}
+                      {index === formInputs.length - 1 && (
+                        <IconButton
+                          type="button"
+                          sx={{ p: '10px' }}
+                          onClick={handleAddRow}
+                          aria-label="search"
+                        >
+                          <AddCircleIcon />
+                        </IconButton>
                       )}
                     </FormControl>
                   </div>

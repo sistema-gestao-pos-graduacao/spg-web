@@ -1,6 +1,7 @@
 import { SvgIconTypeMap } from '@mui/material';
 import { OverridableComponent } from '@mui/material/OverridableComponent';
 import { Dayjs } from 'dayjs';
+import { StateAction } from '../shared/Shared.types';
 
 export type RegisterCardProps = {
   icon: OverridableComponent<SvgIconTypeMap<{}, 'svg'>> & {
@@ -14,19 +15,22 @@ export type RegisterCardProps = {
 export type FormDiscipline = Disciplines[];
 
 export type Disciplines = {
-  curriculumId: number;
-  name: string;
-  teacherId: number;
-  hours: number;
+  name?: string;
+  teacherId?: string;
+  hours?: number;
+  prevId?: number;
 };
 
 export type StepProps = {
+  activeStep: number;
+  setActiveStep: StateAction<number>;
   steps: string[];
   step1: React.ReactNode;
   step2: React.ReactNode;
   onSubmit: () => void;
   isValid: boolean[];
   isLoading: boolean;
+  clearForm: () => void;
 };
 
 export type FormCurriculum = {
@@ -47,8 +51,8 @@ export type CurriculomResponseProps = {
   name: string;
   courseId: number;
   course: string;
-}
+};
 
 export type FormClass = {
   courseId: number;
-}
+};

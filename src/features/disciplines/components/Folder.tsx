@@ -21,7 +21,7 @@ const Folder: React.FC<{
   const color = generateColor();
 
   return (
-    <Link to={`disciplina/${discipline.id}`}>
+    <Link to={String(discipline.id)}>
       <S.Container>
         <S.Left $cardColor={color} />
         <S.Upper $cardColor={color} />

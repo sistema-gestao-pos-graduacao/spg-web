@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import Box from '@mui/material/Box';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
@@ -9,17 +8,19 @@ import { StepFields } from '../Registers.style';
 import { CircularProgress, Typography } from '@mui/material';
 
 const CustomStep = ({
+  activeStep,
+  setActiveStep,
   steps,
   step1,
   step2,
   onSubmit,
   isValid,
   isLoading,
+  clearForm,
 }: StepProps) => {
-  const [activeStep, setActiveStep] = useState(0);
-
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    clearForm();
   };
 
   return (
@@ -74,7 +75,9 @@ const CustomStep = ({
             onClick={() =>
               setActiveStep((prevActiveStep) => prevActiveStep + 1)
             }
+            sx={{ gap: '.5rem' }}
           >
+            {isLoading && <CircularProgress size={'1rem'} color="primary" />}
             Próximo
           </Button>
         )}

@@ -38,7 +38,7 @@ const Discipline = lazy(
   () => import('./features/registers/components/Discipline'),
 );
 const Teacher = lazy(() => import('./features/registers/components/Teacher'));
-const Class = lazy(() => import('./features/registers/components/Class'));  
+const Class = lazy(() => import('./features/registers/components/Class'));
 
 const theme = createTheme({
   palette: {
@@ -75,7 +75,8 @@ const App: React.FC = () => {
         <Home setLogged={setLogged}>
           <Switch>
             <Route path="/" element={<Disciplines />} />
-            <Route path="/disciplina/:id" element={<DisciplinesDetails />} />
+            <Route path="/:id" element={<Disciplines />} />
+            <Route path="/:id/:id" element={<DisciplinesDetails />} />
             <Route path="/requerimentos" element={<Requirements />} />
             <Route path="/chat" element={<Chat />} />
             <Route path="/calendario" element={<Calendar />} />

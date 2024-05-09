@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import { MainScreen } from '../../shared/Shared.style';
 import Folder from './Folder';
 import { Typography } from '@mui/material';
@@ -11,16 +11,49 @@ import FolderLoading from './FolderLoading';
 import { GlobalContext } from '../../shared/Context';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import { NoContent } from '../Disciplines.style';
+import FilterField from '../../shared/components/FilterField';
+import { useLocation } from 'react-router-dom';
 
 const Disciplines: React.FC = () => {
   const { t } = useTranslation();
-
+  const { pathname } = useLocation();
+  const [filteredTeacher, setFilteredTeacher] = useState<number[]>([]);
+  const [filteredSubjects, setFilteredSubjects] = useState<number[]>([]);
+  const [filteredClasses, setFilteredClasses] = useState<number[]>([]);
   const { visionMode, userLogged } = useContext<ContextProps>(GlobalContext);
 
+  const classScreen = pathname === '/';
+
+  const query = useMemo(() => {
+    const subjectFilter =
+      filteredSubjects.length > 0 ? `id=${filteredSubjects.join('&id=')}` : '';
+
+    const classesFilter =
+      filteredClasses.length > 0 ? `id=${filteredClasses.join('&id=')}` : '';
+
+    const teacherFilter =
+      filteredTeacher.length > 0
+        ? `teacherId=${filteredTeacher.join('&teacherId=')}`
+        : visionMode === Roles.TEACHER && userLogged
+          ? `teacherId=${userLogged.personId}`
+          : '';
+
+    const filters = [subjectFilter, classesFilter, teacherFilter]
+      .filter(Boolean)
+      .join('&');
+    const queryParams = filters ? `?${filters}` : '';
+
+    return `${SUBJECTS_ROUTE}${queryParams}`;
+  }, [
+    filteredSubjects,
+    filteredTeacher,
+    filteredClasses,
+    userLogged,
+    visionMode,
+  ]);
+
   const { data: disciplinesData, isLoading } = useApi<SubjectsResponseProps[]>(
-    visionMode === Roles.TEACHER
-      ? `${SUBJECTS_ROUTE}?teacherId=${userLogged?.personId}`
-      : SUBJECTS_ROUTE,
+    query,
     HttpMethods.GET,
   );
 
@@ -52,9 +85,20 @@ const Disciplines: React.FC = () => {
     <MainScreen.Container>
       <MainScreen.Title>
         <Typography fontWeight={700} color={Themes.primary}>
-          {t('disciplines.DISCIPLINES')}
+          {classScreen
+            ? t('disciplines.CLASSES')
+            : t('disciplines.DISCIPLINES')}
         </Typography>
       </MainScreen.Title>
+      <FilterField
+        classScreen={classScreen}
+        filteredTeacher={filteredTeacher}
+        setFilteredTeacher={setFilteredTeacher}
+        filteredSubjects={filteredSubjects}
+        setFilteredSubjects={setFilteredSubjects}
+        filteredClasses={filteredClasses}
+        setFilteredClasses={setFilteredClasses}
+      />
       <MainScreen.Content>{getContent()}</MainScreen.Content>
     </MainScreen.Container>
   );

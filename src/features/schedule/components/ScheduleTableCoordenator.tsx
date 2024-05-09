@@ -1,16 +1,11 @@
 import React, { useState } from 'react';
-import {
-  Calendar,
-  Event,
-  SlotInfo,
-  dateFnsLocalizer,
-} from 'react-big-calendar';
+import { Calendar, Event, dateFnsLocalizer } from 'react-big-calendar';
 import withDragAndDrop, {
   DragFromOutsideItemArgs,
   EventInteractionArgs,
 } from 'react-big-calendar/lib/addons/dragAndDrop';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { EventProps, ScheduleTableProps } from '../Schedule.types';
+import { EventProps, ScheduleTableCoordenatorProps } from '../Schedule.types';
 import ScheduleModal from './ScheduleModal';
 import {
   CalendarContainer,
@@ -24,7 +19,6 @@ import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { CalendarTranlates } from '../Schedule.consts';
 import CloseIcon from '@mui/icons-material/Close';
-import { Themes } from '../../shared/Shared.consts';
 
 const locales = {
   'pt-BR': ptBR,
@@ -39,7 +33,7 @@ const localizer = dateFnsLocalizer({
 });
 const DnDCalendar = withDragAndDrop(Calendar);
 
-const ScheduleTableCoordenator: React.FC<ScheduleTableProps> = ({
+const ScheduleTableCoordenator: React.FC<ScheduleTableCoordenatorProps> = ({
   events,
   setEvents,
   manualEvents,
@@ -75,6 +69,7 @@ const ScheduleTableCoordenator: React.FC<ScheduleTableProps> = ({
       ...prev,
       {
         ...externalEvents,
+        id: `${externalEvents?.id}-${Math.random()}`,
         start: new Date(start),
         end: new Date(endDate),
       } as EventProps,
@@ -82,20 +77,10 @@ const ScheduleTableCoordenator: React.FC<ScheduleTableProps> = ({
 
     setExternalEvents(null);
 
-    const removedItem = [
-      ...(manualEvents.find(
-        ({ id }) => id === Number(externalEvents?.id?.split('-')[0]),
-      )?.items ?? []),
-    ];
     const clone = [...manualEvents];
-    const index = clone.findIndex(
-      ({ id }) => id === Number(externalEvents?.id?.split('-')[0]),
-    );
+    const index = clone.findIndex(({ id }) => id === externalEvents?.id);
 
-    clone[index] = {
-      ...clone[index],
-      items: removedItem.filter(({ id }) => id !== externalEvents?.id),
-    };
+    clone[index].classNumber -= 1;
     setManualEvents(clone);
   };
 
@@ -109,18 +94,6 @@ const ScheduleTableCoordenator: React.FC<ScheduleTableProps> = ({
     event: ({ event }: { event: Event }) => <CustomEventRow event={event} />,
   };
 
-  const setTeacherScheduleds = (slotInfo: SlotInfo) => {
-    const { start, end } = slotInfo;
-    setEvents([
-      ...events,
-      {
-        start,
-        end,
-        color: Themes.primary,
-      },
-    ]);
-  };
-
   const CustomEventRow = ({ event }: { event: Event }) => {
     const SelectEvent = (event: Event) => {
       setCurrentEvent(event as EventProps);
@@ -132,8 +105,7 @@ const ScheduleTableCoordenator: React.FC<ScheduleTableProps> = ({
         ({ id: eventId }) => eventId === Number(id?.split('-')[0]),
       );
       const clone = [...manualEvents];
-      const { start, end, ...rest } = event as Event;
-      clone[index].items.push(rest as EventProps);
+      clone[index].classNumber += 1;
 
       setManualEvents(clone);
       setEvents((prev) => prev.filter(({ id: eventsId }) => eventsId !== id));
@@ -170,7 +142,6 @@ const ScheduleTableCoordenator: React.FC<ScheduleTableProps> = ({
         views={['month', 'day', 'agenda']}
         step={10}
         timeslots={6}
-        onSelectSlot={setTeacherScheduleds}
         selectable={false}
       />
       {currentEvent && (
