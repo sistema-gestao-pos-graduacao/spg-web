@@ -5,6 +5,8 @@ const PtBr = {
   TEACHER: 'Professor: ',
   TIME: 'Horário: ',
   MANUAL_DOCKING: 'ENCAIXE MANUAL',
+  DISCIPLINES: 'Disciplina',
+  CLASS: 'Aulas',
 };
 
 export default PtBr;

@@ -14,16 +14,16 @@ export interface EventProps {
   workload?: number;
 }
 
-export interface ManualEventsProps {
+export interface ManualEventsProps extends Omit<EventProps, 'id'> {
   title: string;
+  classNumber: number;
   id: number;
-  items: Partial<EventProps>[];
 }
 export interface ScheduleTableProps {
   events: EventProps[];
   setEvents: StateAction<EventProps[]>;
   manualEvents: ManualEventsProps[];
   setManualEvents: StateAction<ManualEventsProps[]>;
-  externalEvents: Partial<EventProps> | null;
-  setExternalEvents: StateAction<Partial<EventProps> | null>;
+  externalEvents: Partial<ManualEventsProps> | null;
+  setExternalEvents: StateAction<Partial<ManualEventsProps> | null>;
 }

@@ -20,7 +20,7 @@ const ScheduleCoordenator: React.FC = () => {
   const { t } = useTranslation();
 
   const [externalEvents, setExternalEvents] =
-    useState<Partial<EventProps> | null>(null);
+    useState<Partial<ManualEventsProps> | null>(null);
   const [events, setEvents] = useState<EventProps[]>([]);
   const [manualEvents, setManualEvents] = useState<ManualEventsProps[]>([]);
   const [filteredTeacher, setFilteredTeacher] = useState<number[]>([]);
@@ -153,6 +153,7 @@ const ScheduleCoordenator: React.FC = () => {
         const referenceItem = disciplinesData?.find(
           ({ id }) => id === item.subjectId,
         )!;
+
         return {
           ...referenceItem,
           hours: 1,
@@ -170,19 +171,14 @@ const ScheduleCoordenator: React.FC = () => {
         const count = scheduledItems.filter(
           ({ id }) => Number(id.split('-')[0]) === events.id,
         ).length;
-        const arr = Array(events.hours - count).fill('');
         return {
+          ...events,
+          classNumber: events.hours - count,
           title: events.name,
-          id: events.id,
-          items: arr.map(() => ({
-            ...events,
-            hours: 1,
-            id: `${events.id}-${Math.random()}`,
-          })),
         };
       }) ?? [],
     );
-  }, [scheduledItems]);
+  }, [scheduledItems, disciplinesData]);
 
   useEffect(() => {
     setEvents(scheduledItems);
@@ -243,7 +239,7 @@ const ScheduleCoordenator: React.FC = () => {
         </MainScreen.Content>
       </MainScreen.Container>
       <Disciplines
-        manualEvents={manualEvents.filter(({ items }) => items.length > 0)}
+        manualEvents={manualEvents.filter(({ classNumber }) => classNumber > 0)}
         externalEvents={externalEvents}
         setExternalEvents={setExternalEvents}
         isLoading={isLoading || scheduleGetLoading}

@@ -114,11 +114,7 @@ export const EventItem = styled.div`
 `;
 
 export const EventItemContent = styled.div`
-  width: 100%;
-
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  width: 80%;
 `;
 
 export const RemoveEventButton = styled.button`
@@ -147,11 +143,18 @@ export const ModalTimeDiscipline = styled.input`
     outline: none;
   }
 `;
+
 export const ScheduledContent = styled.div<{ $isTeacher: boolean }>`
   display: ${({ $isTeacher }) => ($isTeacher ? 'flex' : 'grid')};
-  grid-template-columns: minmax(0, 1fr) 0.2fr;
+  grid-template-columns: minmax(0, 1fr) 0.3fr;
   flex: 1;
   max-height: 100%;
   grid-auto-rows: 1fr;
   column-gap: 2rem;
+`;
+
+export const DisciplineListHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding-right: 0.5rem;
 `;

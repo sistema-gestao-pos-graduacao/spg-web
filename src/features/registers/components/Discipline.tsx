@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 import SchoolIcon from '@mui/icons-material/School';
 import CustomStep from './Step';
 import { CurriculomResponseProps, FormDiscipline } from '../Registers.types';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import CustomModal from '../../shared/components/CustomModal';
@@ -24,21 +24,86 @@ import {
   SUBJECTS_ROUTE,
 } from '../../shared/RoutesURL';
 import { HttpMethods } from '../../shared/Shared.consts';
-import { PersonResponseProps } from '../../shared/Shared.types';
+import {
+  PersonResponseProps,
+  SubjectsResponseProps,
+} from '../../shared/Shared.types';
 
 const Registers = () => {
   const { t } = useTranslation();
-
   const [open, setOpen] = useState(false);
-  const [curriculumId, setCurriculumId] = useState<number | null>(null);
+  const [curriculumId, setCurriculumId] = useState<string | null>('');
+  const [activeStep, setActiveStep] = useState(0);
   const steps = ['Selecionar Matriz', 'Adicionar Disciplinas'];
-  const [formInputs, setFormInputs] = useState<FormDiscipline>([
+
+  const defaultInput = [
     {
       name: '',
       teacherId: undefined,
       hours: undefined,
     },
-  ]);
+  ];
+
+  const [formInputs, setFormInputs] = useState<FormDiscipline>(defaultInput);
+
+  const { data: curriculumData, isLoading: curriculumLoading } = useApi<
+    CurriculomResponseProps[]
+  >(CURRICULUM_ROUTE, HttpMethods.GET);
+
+  const { data: personData, isLoading: personLoading } = useApi<
+    PersonResponseProps[]
+  >(`${PERSONS_ROUTE}?personType=Teacher`, HttpMethods.GET);
+
+  const { data: subjectData, isLoading: subjectLoading } = useApi<
+    SubjectsResponseProps[]
+  >(
+    `${SUBJECTS_ROUTE}?curriculumId=${curriculumId}`,
+    HttpMethods.GET,
+    !!curriculumId,
+  );
+
+  const formInputFilter = useMemo(
+    () =>
+      formInputs
+        .filter(({ prevId }) => !prevId)
+        .map((item) => ({
+          ...item,
+          curriculumId,
+          hours: Number(item.hours),
+        })),
+    [formInputs],
+  );
+
+  const { isLoading, isSuccess, refetch } = useApi(
+    SUBJECTS_ROUTE + '/SaveAll',
+    HttpMethods.POST,
+    false,
+    formInputFilter,
+  );
+
+  const formInputDelete = useMemo(
+    () =>
+      subjectData
+        ?.filter(({ id }) => !formInputs.find(({ prevId }) => id === prevId))
+        .map(({ id }) => id),
+    [formInputs],
+  );
+
+  const {
+    isLoading: deleteLoading,
+    isSuccess: deleteSuccess,
+    refetch: deleteRefetch,
+  } = useApi(
+    SUBJECTS_ROUTE + '/DeleteAll',
+    HttpMethods.POST,
+    false,
+    formInputDelete,
+  );
+
+  const onSubmit = () => {
+    if (formInputFilter.length > 0) refetch();
+    if (formInputDelete && formInputDelete.length > 0) deleteRefetch();
+  };
 
   const handleAddRow = () => {
     setFormInputs((prev) => [
@@ -66,40 +131,26 @@ const Registers = () => {
     [formInputs],
   );
 
-  const {
-    isLoading: subjectLoading,
-    isSuccess,
-    refetch,
-    remove,
-  } = useApi(
-    SUBJECTS_ROUTE + '/SaveAll',
-    HttpMethods.POST,
-    false,
-    formInputs.map((item) => ({
-      ...item,
-      curriculumId,
-      hours: Number(item.hours),
-    })),
-  );
-
-  const { data: curriculumData, isLoading: curriculumLoading } = useApi<
-    CurriculomResponseProps[]
-  >(CURRICULUM_ROUTE, HttpMethods.GET);
-
-  const { data: personData, isLoading: personLoading } = useApi<
-    PersonResponseProps[]
-  >(`${PERSONS_ROUTE}?personType=Teacher`, HttpMethods.GET);
-
-  const onSubmit = () => {
-    refetch();
-  };
-
   useEffect(() => {
-    if (isSuccess) {
+    if (isSuccess && deleteSuccess) {
       setOpen(true);
-      remove();
     }
   }, [isSuccess]);
+
+  useEffect(() => {
+    if (subjectData && subjectData.length > 0) {
+      setFormInputs(
+        subjectData.map(({ name, teacherId, hours, id }) => ({
+          prevId: id,
+          name,
+          teacherId: String(teacherId),
+          hours,
+        })),
+      );
+    } else {
+      setFormInputs(defaultInput);
+    }
+  }, [activeStep]);
 
   return (
     <MainScreen.Container>
@@ -136,11 +187,14 @@ const Registers = () => {
           }}
         >
           <CustomStep
+            activeStep={activeStep}
+            setActiveStep={setActiveStep}
             steps={steps}
-            isLoading={subjectLoading}
+            isLoading={isLoading || deleteLoading || subjectLoading}
             onSubmit={onSubmit}
+            clearForm={() => setFormInputs(defaultInput)}
             isValid={[
-              !!curriculumId,
+              !!curriculumId && !subjectLoading,
               formInputs.every(
                 ({ hours, name, teacherId }) => name && teacherId && hours,
               ),
@@ -158,15 +212,14 @@ const Registers = () => {
                   <Select
                     labelId="curriculum-label"
                     id="curriculum-select"
-                    onChange={({ target }) =>
-                      setCurriculumId(Number(target.value))
-                    }
+                    onChange={({ target }) => setCurriculumId(target.value)}
                     label="Matriz Curricular"
                     value={curriculumId}
                     MenuProps={{ PaperProps: { sx: { maxHeight: '10rem' } } }}
+                    defaultValue=""
                   >
                     {curriculumData?.map(({ id, name }) => (
-                      <MenuItem key={id} value={id}>
+                      <MenuItem key={id} value={String(id)}>
                         {name}
                       </MenuItem>
                     ))}
@@ -180,7 +233,10 @@ const Registers = () => {
                   <div key={index}>
                     <FormControl
                       fullWidth
-                      sx={{ marginTop: '1rem', display: 'inline-block' }}
+                      sx={{
+                        marginTop: '1rem',
+                        display: 'inline-block',
+                      }}
                     >
                       <TextField
                         key={'name' + index}
@@ -211,10 +267,10 @@ const Registers = () => {
                             )
                           }
                           sx={{ marginRight: '1rem', width: '15rem' }}
-                          defaultValue={0}
+                          defaultValue=""
                         >
                           {personData?.map(({ id, name }) => (
-                            <MenuItem key={id} value={id}>
+                            <MenuItem key={id} value={String(id)}>
                               {name}
                             </MenuItem>
                           ))}
