@@ -25,34 +25,35 @@ const Disciplines: React.FC = () => {
   const classScreen = pathname === '/';
 
   const query = useMemo(() => {
-    if (
-      filteredSubjects.length > 0 ||
-      filteredTeacher.length > 0 ||
-      filteredClasses.length > 0
-    ) {
-      const subjectFilter =
-        filteredSubjects.length > 0
-          ? `id=${filteredSubjects.join('&id=')}`
+    const subjectFilter =
+      filteredSubjects.length > 0 ? `id=${filteredSubjects.join('&id=')}` : '';
+
+    const classesFilter =
+      filteredClasses.length > 0 ? `id=${filteredClasses.join('&id=')}` : '';
+
+    const teacherFilter =
+      filteredTeacher.length > 0
+        ? `teacherId=${filteredTeacher.join('&teacherId=')}`
+        : visionMode === Roles.TEACHER && userLogged
+          ? `teacherId=${userLogged.personId}`
           : '';
-      const classesFilter =
-        filteredClasses.length > 0 ? `id=${filteredClasses.join('&id=')}` : '';
-      const teacherFilter =
-        filteredTeacher.length > 0
-          ? `teacherId=${filteredTeacher.join('&id=')}`
-          : '';
-      const filters = [subjectFilter, classesFilter, teacherFilter]
-        .filter(Boolean)
-        .join('&');
-      const queryParams = filters ? `?${filters}` : '';
-      return `${SUBJECTS_ROUTE}${queryParams}`;
-    }
-    return SUBJECTS_ROUTE;
-  }, [filteredSubjects, filteredTeacher, filteredClasses]);
+
+    const filters = [subjectFilter, classesFilter, teacherFilter]
+      .filter(Boolean)
+      .join('&');
+    const queryParams = filters ? `?${filters}` : '';
+
+    return `${SUBJECTS_ROUTE}${queryParams}`;
+  }, [
+    filteredSubjects,
+    filteredTeacher,
+    filteredClasses,
+    userLogged,
+    visionMode,
+  ]);
 
   const { data: disciplinesData, isLoading } = useApi<SubjectsResponseProps[]>(
-    visionMode === Roles.TEACHER
-      ? `${SUBJECTS_ROUTE}?teacherId=${userLogged?.personId}`
-      : query,
+    query,
     HttpMethods.GET,
   );
 
@@ -76,11 +77,7 @@ const Disciplines: React.FC = () => {
       );
     }
     return disciplinesData?.map((discipline) => (
-      <Folder
-        key={discipline.id}
-        discipline={discipline}
-        classScreen={classScreen}
-      />
+      <Folder key={discipline.id} discipline={discipline} />
     ));
   };
 

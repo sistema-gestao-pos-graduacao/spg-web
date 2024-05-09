@@ -17,8 +17,6 @@ const ScheduleTeacher: React.FC = () => {
 
   const { userLogged } = useContext<ContextProps>(GlobalContext);
 
-  const [externalEvents, setExternalEvents] =
-    useState<Partial<EventProps> | null>(null);
   const [events, setEvents] = useState<EventProps[]>([]);
 
   const {
@@ -132,14 +130,7 @@ const ScheduleTeacher: React.FC = () => {
               sx={{ borderRadius: '1rem', animationDuration: '1.5s' }}
             />
           ) : (
-            <ScheduleTableTeacher
-              events={events}
-              setEvents={setEvents}
-              manualEvents={[]}
-              setManualEvents={() => {}}
-              externalEvents={externalEvents}
-              setExternalEvents={setExternalEvents}
-            />
+            <ScheduleTableTeacher events={events} setEvents={setEvents} />
           )}
         </MainScreen.Content>
       </MainScreen.Container>

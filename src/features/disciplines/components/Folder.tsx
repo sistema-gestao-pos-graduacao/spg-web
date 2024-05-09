@@ -17,8 +17,7 @@ const Folder: React.FC<{
     name: string;
     id: number;
   };
-  classScreen: boolean;
-}> = ({ discipline, classScreen }) => {
+}> = ({ discipline }) => {
   const color = generateColor();
 
   return (

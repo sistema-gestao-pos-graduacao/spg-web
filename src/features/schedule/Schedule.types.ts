@@ -22,6 +22,8 @@ export interface ManualEventsProps extends Omit<EventProps, 'id'> {
 export interface ScheduleTableProps {
   events: EventProps[];
   setEvents: StateAction<EventProps[]>;
+}
+export interface ScheduleTableCoordenatorProps extends ScheduleTableProps {
   manualEvents: ManualEventsProps[];
   setManualEvents: StateAction<ManualEventsProps[]>;
   externalEvents: Partial<ManualEventsProps> | null;

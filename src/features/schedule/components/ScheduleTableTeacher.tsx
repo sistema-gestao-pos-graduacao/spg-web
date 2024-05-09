@@ -6,7 +6,6 @@ import {
   dateFnsLocalizer,
 } from 'react-big-calendar';
 import withDragAndDrop, {
-  DragFromOutsideItemArgs,
   EventInteractionArgs,
 } from 'react-big-calendar/lib/addons/dragAndDrop';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
@@ -50,10 +49,6 @@ const CustomHeader = (label: string) => {
 const ScheduleTableTeacher: React.FC<ScheduleTableProps> = ({
   events,
   setEvents,
-  manualEvents,
-  setManualEvents,
-  externalEvents,
-  setExternalEvents,
 }) => {
   const onEventDrop = (data: EventInteractionArgs<object>) => {
     const { start, end, event } = data;
@@ -69,38 +64,6 @@ const ScheduleTableTeacher: React.FC<ScheduleTableProps> = ({
         end,
       },
     ]);
-  };
-
-  const onDropFromOutsideEvent = (data: DragFromOutsideItemArgs) => {
-    const { start } = data;
-    const hours = new Date(start).getHours();
-    let endDate = new Date(start).setHours(hours + 1);
-    setEvents((prev) => [
-      ...prev,
-      {
-        ...externalEvents,
-        start: new Date(start),
-        end: new Date(endDate),
-      } as EventProps,
-    ]);
-
-    setExternalEvents(null);
-
-    const removedItem = [
-      ...(manualEvents.find(
-        ({ id }) => id === Number(externalEvents?.id?.split('-')[0]),
-      )?.items ?? []),
-    ];
-    const clone = [...manualEvents];
-    const index = clone.findIndex(
-      ({ id }) => id === Number(externalEvents?.id?.split('-')[0]),
-    );
-
-    clone[index] = {
-      ...clone[index],
-      items: removedItem.filter(({ id }) => id !== externalEvents?.id),
-    };
-    setManualEvents(clone);
   };
 
   const eventStyleGetter = (event: Event) => {
@@ -166,7 +129,6 @@ const ScheduleTableTeacher: React.FC<ScheduleTableProps> = ({
         eventPropGetter={eventStyleGetter}
         resizable
         culture="pt-BR"
-        onDropFromOutside={onDropFromOutsideEvent}
         components={{
           ...rowEvent,
           toolbar: () => null,

@@ -1,7 +1,7 @@
 import React, { DragEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { EventProps, ManualEventsProps } from '../Schedule.types';
+import { ManualEventsProps } from '../Schedule.types';
 import 'moment/locale/pt-br';
 import { StateAction } from '../../shared/Shared.types';
 import {

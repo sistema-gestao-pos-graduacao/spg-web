@@ -5,7 +5,7 @@ import withDragAndDrop, {
   EventInteractionArgs,
 } from 'react-big-calendar/lib/addons/dragAndDrop';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { EventProps, ScheduleTableProps } from '../Schedule.types';
+import { EventProps, ScheduleTableCoordenatorProps } from '../Schedule.types';
 import ScheduleModal from './ScheduleModal';
 import {
   CalendarContainer,
@@ -33,7 +33,7 @@ const localizer = dateFnsLocalizer({
 });
 const DnDCalendar = withDragAndDrop(Calendar);
 
-const ScheduleTableCoordenator: React.FC<ScheduleTableProps> = ({
+const ScheduleTableCoordenator: React.FC<ScheduleTableCoordenatorProps> = ({
   events,
   setEvents,
   manualEvents,
