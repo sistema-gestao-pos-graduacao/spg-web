@@ -9,3 +9,4 @@ export const CURRICULUM_ROUTE = `${apiUrl}/Curriculums`;
 export const SUBJECTS_ROUTE = `${apiUrl}/Subjects`;
 export const TEACHER_ROUTE = `${apiUrl}/TeacherAvailabilities`;
 export const SCHEDULE_ROUTE = `${apiUrl}/ClassSchedule`;
+export const FORGOT_PASSWORD_ROUTE = `${apiUrl}/Users/ForgotPassword`;

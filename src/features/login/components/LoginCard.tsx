@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import { useContext, useEffect } from 'react';
 import { HttpMethods, Themes } from '../../shared/Shared.consts';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { FormValues, LoginCardProps } from '../Login.types';
 import { useTranslation } from 'react-i18next';
 import { useForm, SubmitHandler } from 'react-hook-form';
@@ -26,12 +26,14 @@ import { CONTEXT_ROUTE, LOGIN_ROUTE } from '../../shared/RoutesURL';
 import useApi from '../../shared/useApi';
 import { ContextProps, ContextResponseProps } from '../../shared/Shared.types';
 import { GlobalContext } from '../../shared/Context';
+import ForgotPasswordModal from './ForgotPasswordModal';
 
 const LoginCard = ({ setLogged }: LoginCardProps) => {
   const navigate = useNavigate();
   const { setUserLogged } = useContext<ContextProps>(GlobalContext);
 
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [passwordModal, setPasswordModal] = useState<boolean>(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -188,16 +190,16 @@ const LoginCard = ({ setLogged }: LoginCardProps) => {
             variant="contained"
             style={{ height: '2rem', width: '50%', borderRadius: 20 }}
             disabled={isLoading}
-            onClick={() => setLogged(true)}
+            onClick={() => setPasswordModal(true)}
           >
-            <Link to={'/'}>
-              <Typography variant="caption">
-                {t('login.FORGOTBUTTON')}
-              </Typography>
-            </Link>
+            <Typography variant="caption">{t('login.FORGOTBUTTON')}</Typography>
           </Button>
         </CardActions>
       </Card>
+      <ForgotPasswordModal
+        passwordModal={passwordModal}
+        setPasswordModal={setPasswordModal}
+      />
     </form>
   );
 };
