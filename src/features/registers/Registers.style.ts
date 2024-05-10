@@ -2,6 +2,11 @@ import styled from 'styled-components';
 
 import { Card, CardActionArea } from '@mui/material';
 
+export const RegisterContent = styled.div`
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+`;
 export const CardIcon = styled.span`
   display: flex;
   width: 2.8rem;
@@ -9,7 +14,6 @@ export const CardIcon = styled.span`
   color: ${({ theme }) => theme.primary};
   font-size: 8rem;
   align-items: center;
-  margin: 2.8rem;
   justify-content: center;
   border-radius: 1rem;
   box-shadow: 2px 2px 10px ${({ theme }) => theme.gray};
@@ -17,18 +21,18 @@ export const CardIcon = styled.span`
 
 export const StyledCardAction = styled(CardActionArea)`
   && {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-rows: 0.5fr 1fr;
     justify-content: space-between;
+    justify-items: center;
     height: 100%;
   }
 `;
 
 export const StyledCard = styled(Card)`
   && {
-    width: 18rem;
-    height: 22rem;
-    margin: 2rem;
+    max-width: 18rem;
+    min-height: 22rem;
     border-radius: 1rem;
     box-shadow: 2px 2px 10px ${({ theme }) => theme.gray};
   }

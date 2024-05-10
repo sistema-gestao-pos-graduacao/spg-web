@@ -32,15 +32,15 @@ import {
 const Registers = () => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
-  const [curriculumId, setCurriculumId] = useState<string | null>('');
+  const [curriculumId, setCurriculumId] = useState<string>('');
   const [activeStep, setActiveStep] = useState(0);
   const steps = ['Selecionar Matriz', 'Adicionar Disciplinas'];
 
   const defaultInput = [
     {
       name: '',
-      teacherId: undefined,
-      hours: undefined,
+      teacherId: '',
+      hours: '',
     },
   ];
 
@@ -70,11 +70,12 @@ const Registers = () => {
           ...item,
           curriculumId,
           hours: Number(item.hours),
+          teacherId: Number(item.teacherId),
         })),
     [formInputs],
   );
 
-  const { isLoading, isSuccess, refetch } = useApi(
+  const { isLoading, isSuccess, refetch, remove } = useApi(
     SUBJECTS_ROUTE + '/SaveAll',
     HttpMethods.POST,
     false,
@@ -93,6 +94,7 @@ const Registers = () => {
     isLoading: deleteLoading,
     isSuccess: deleteSuccess,
     refetch: deleteRefetch,
+    remove: deleteRemove,
   } = useApi(
     SUBJECTS_ROUTE + '/DeleteAll',
     HttpMethods.POST,
@@ -110,14 +112,15 @@ const Registers = () => {
       ...prev,
       {
         name: '',
-        teacherId: undefined,
-        hours: undefined,
+        teacherId: '',
+        hours: '',
       },
     ]);
   };
 
   const handleDeleteRow = (fieldindex: number) => {
     setFormInputs(formInputs.filter((_, index) => fieldindex !== index));
+    if (formInputs.length === 1) setFormInputs(defaultInput);
   };
 
   const editFieldHandler = useCallback(
@@ -132,10 +135,12 @@ const Registers = () => {
   );
 
   useEffect(() => {
-    if (isSuccess && deleteSuccess) {
+    if (isSuccess || deleteSuccess) {
       setOpen(true);
+      remove();
+      deleteRemove();
     }
-  }, [isSuccess]);
+  }, [isSuccess, deleteSuccess]);
 
   useEffect(() => {
     if (subjectData && subjectData.length > 0) {
@@ -144,7 +149,7 @@ const Registers = () => {
           prevId: id,
           name,
           teacherId: String(teacherId),
-          hours,
+          hours: String(hours),
         })),
       );
     } else {
@@ -216,7 +221,6 @@ const Registers = () => {
                     label="Matriz Curricular"
                     value={curriculumId}
                     MenuProps={{ PaperProps: { sx: { maxHeight: '10rem' } } }}
-                    defaultValue=""
                   >
                     {curriculumData?.map(({ id, name }) => (
                       <MenuItem key={id} value={String(id)}>
@@ -245,7 +249,6 @@ const Registers = () => {
                           editFieldHandler(e.target.value, index, 'name')
                         }
                         sx={{ marginRight: '1rem', width: '20rem' }}
-                        defaultValue=""
                         value={formInputs[index].name}
                       />
 
@@ -260,14 +263,9 @@ const Registers = () => {
                           type="number"
                           label="Professor"
                           onChange={(e) =>
-                            editFieldHandler(
-                              Number(e.target.value),
-                              index,
-                              'teacherId',
-                            )
+                            editFieldHandler(e.target.value, index, 'teacherId')
                           }
                           sx={{ marginRight: '1rem', width: '15rem' }}
-                          defaultValue=""
                         >
                           {personData?.map(({ id, name }) => (
                             <MenuItem key={id} value={String(id)}>
@@ -280,26 +278,23 @@ const Registers = () => {
                       <TextField
                         key={'hours' + index}
                         label="Número de Aulas"
-                        value={formInputs[index].hours ?? ''}
+                        value={String(formInputs[index].hours) ?? ''}
                         type="number"
                         onChange={(e) =>
                           editFieldHandler(e.target.value, index, 'hours')
                         }
                         sx={{ marginRight: '1rem', width: '11rem' }}
-                        defaultValue=""
                         InputProps={{ inputProps: { min: 1 } }}
                       />
 
-                      {formInputs.length > 1 && (
-                        <IconButton
-                          type="button"
-                          sx={{ p: '10px' }}
-                          onClick={() => handleDeleteRow(index)}
-                          aria-label="search"
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      )}
+                      <IconButton
+                        type="button"
+                        sx={{ p: '10px' }}
+                        onClick={() => handleDeleteRow(index)}
+                        aria-label="search"
+                      >
+                        <DeleteIcon />
+                      </IconButton>
                       {index === formInputs.length - 1 && (
                         <IconButton
                           type="button"
