@@ -51,7 +51,7 @@ export interface SubjectsResponseProps {
   curriculumName: string;
   teacherId: number;
   teacherName: string;
-  hours: number;
+  numberOfClasses: number;
   location: string;
   building: string;
   room: string;

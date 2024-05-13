@@ -63,8 +63,9 @@ const ScheduleTableCoordenator: React.FC<ScheduleTableCoordenatorProps> = ({
 
   const onDropFromOutsideEvent = (data: DragFromOutsideItemArgs) => {
     const { start } = data;
-    const hours = new Date(start).getHours();
-    let endDate = new Date(start).setHours(hours + 1);
+    let endDate = new Date(start).setMinutes(
+      new Date(start).getMinutes() + 100,
+    );
     setEvents((prev) => [
       ...prev,
       {
@@ -116,7 +117,7 @@ const ScheduleTableCoordenator: React.FC<ScheduleTableCoordenatorProps> = ({
     return (
       <EventItem>
         <EventItemContent onClick={() => SelectEvent(event)}>
-          {event.name}
+          {event.title}
         </EventItemContent>
         <RemoveEventButton onClick={() => removeEvent(event as EventProps)}>
           <CloseIcon color="secondary" style={defaultStyle} />

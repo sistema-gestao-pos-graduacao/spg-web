@@ -58,9 +58,9 @@ const ScheduleModal: React.FC<{
             <S.field>
               <Typography fontWeight={700}>{t('schedule.TIME')}</Typography>
               <Typography sx={{ textTransform: 'capitalize' }}>
-                {`${format(currentEvent?.startDateTime || new Date(), 'EEEE', { locale: ptBR })}
-                 (${format(currentEvent?.startDateTime || new Date(), 'HH:mm')}
-                 - ${format(currentEvent?.endDateTime || new Date(), 'HH:mm')})
+                {`${format(currentEvent?.start || new Date(), 'EEEE', { locale: ptBR })}
+                 (${format(currentEvent?.start || new Date(), 'HH:mm')}
+                 - ${format(currentEvent?.end || new Date(), 'HH:mm')})
                  `}
               </Typography>
             </S.field>

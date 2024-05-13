@@ -145,11 +145,11 @@ const Registers = () => {
   useEffect(() => {
     if (subjectData && subjectData.length > 0) {
       setFormInputs(
-        subjectData.map(({ name, teacherId, hours, id }) => ({
+        subjectData.map(({ name, teacherId, numberOfClasses, id }) => ({
           prevId: id,
           name,
           teacherId: String(teacherId),
-          hours: String(hours),
+          numberOfClasses: String(numberOfClasses),
         })),
       );
     } else {

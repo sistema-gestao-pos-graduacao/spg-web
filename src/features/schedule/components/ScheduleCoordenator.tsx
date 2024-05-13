@@ -157,7 +157,7 @@ const ScheduleCoordenator: React.FC = () => {
 
         return {
           ...referenceItem,
-          hours: 1,
+          title: item.subjectName,
           id: `${referenceItem!.id}-${Math.random()}-${item.id}`,
           start: new Date(item.startDateTime),
           end: new Date(item.endDateTime),
@@ -174,7 +174,7 @@ const ScheduleCoordenator: React.FC = () => {
         ).length;
         return {
           ...events,
-          classNumber: events.hours - count,
+          classNumber: events.numberOfClasses - count,
           title: events.name,
         };
       }) ?? [],

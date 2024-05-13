@@ -114,7 +114,9 @@ export const EventItem = styled.div`
 `;
 
 export const EventItemContent = styled.div`
-  width: 80%;
+  width: 90%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 export const RemoveEventButton = styled.button`

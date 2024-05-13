@@ -78,9 +78,9 @@ const DisciplinesDetails: React.FC = () => {
         type: 'text',
       },
       {
-        label: t('disciplines.HOURS'),
+        label: t('disciplines.CLASS_NUMBER'),
         edited: false,
-        key: 'hours',
+        key: 'numberOfClasses',
         type: 'text',
       },
       {

@@ -101,7 +101,7 @@ const ScheduleTableTeacher: React.FC<ScheduleTableProps> = ({
 
     return (
       <EventItem>
-        <EventItemContent>{event.name}</EventItemContent>
+        <EventItemContent>{event.title}</EventItemContent>
         <RemoveEventButton onClick={() => removeEvent(event as EventProps)}>
           <CloseIcon
             color="secondary"

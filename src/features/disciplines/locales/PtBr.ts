@@ -6,7 +6,7 @@ const PtBr = {
   TEACHER: 'Professor',
   MATRIX: 'Matriz Curricular',
   DISCIPLINE: 'Disciplina',
-  HOURS: 'Horas de Aula',
+  CLASS_NUMBER: 'Nº de Aulas',
   LOCATION: 'Local',
   BUILDING: 'Prédio',
   ROOM: 'Sala',
