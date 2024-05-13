@@ -38,80 +38,74 @@ const ExportToPDF: React.FC = () => {
     const rows: any[] = [];
     
     const classTimes = [
-      { start: '07:00', end: '08:40' },
-      { start: '08:50', end: '10:30' },
-      { start: '10:40', end: '12:20' },
       { start: '17:10', end: '18:50' },
       { start: '19:00', end: '20:40' },
       { start: '20:50', end: '22:30' }
     ];
   
-    const MINUTES_INTERVAL = 100;
-  
-    const startDateTime = new Date();
-    startDateTime.setHours(0, 0, 0, 0);
-  
-    const endDateTime = new Date();
-    endDateTime.setHours(23, 59, 59, 999);
-  
-    const durationInMinutes = (endDateTime.getTime() - startDateTime.getTime()) / (1000 * 60);
-    const numIntervals = Math.ceil(durationInMinutes / MINUTES_INTERVAL);
-    
-    for (let i = 0; i < numIntervals; i++) {
-      const currentStartDateTime = new Date(startDateTime.getTime() + i * MINUTES_INTERVAL * 60 * 1000);
-      const currentEndDateTime = new Date(currentStartDateTime.getTime() + MINUTES_INTERVAL * 60 * 1000);
-    
-      const classTimeIndex = Math.floor(i / (MINUTES_INTERVAL / 60));
-      const classTime = classTimes[classTimeIndex];
-      if (!classTime) continue;
-      
+    classTimes.forEach(classTime => {
       const row: any[] = [];
       row.push(`${classTime.start} - ${classTime.end}`);
-    
-      daysOfWeek.forEach((_day, index) => {
-        const scheduleItem = scheduleData?.find((item) => {
+  
+      daysOfWeek.forEach(day => {
+        const scheduleItem = scheduleData?.find(item => {
           const startDateTime = new Date(item.startDateTime);
           const endDateTime = new Date(item.endDateTime);
-    
+          const startHour = startDateTime.getHours();
+          const startMinutes = startDateTime.getMinutes();
+          const endHour = endDateTime.getHours();
+          const endMinutes = endDateTime.getMinutes();
+  
           return (
-            startDateTime <= currentStartDateTime &&
-            endDateTime >= currentEndDateTime &&
-            currentStartDateTime.getDay() + 1 === index &&
+            day === daysOfWeek[startDateTime.getDay() - 1] &&
+            classTime.start === `${startHour.toString().padStart(2, '0')}:${startMinutes.toString().padStart(2, '0')}` &&
+            classTime.end === `${endHour.toString().padStart(2, '0')}:${endMinutes.toString().padStart(2, '0')}` &&
             item.teacherName === teacher
           );
         });
-    
+  
         row.push(scheduleItem ? scheduleItem.subjectName : '');
       });
-    
+  
       rows.push(row);
-    }
-    
+    });
+  
     return { teacher, rows };
   };
   
   const generatePDF = () => {
     const doc = new jsPDF();
-  
+    const totalColumns = 8;
+    
     const tables = generateTables();
     tables.forEach((table, index) => {
       if (index !== 0) {
         doc.addPage();
       }
-      doc.text(`Professor: ${table.teacher}`, 10, 10);
+      doc.text(`Professor(a): ${table.teacher}`, 10, 10);
+      
+      const cellWidth = doc.internal.pageSize.getWidth() / totalColumns;
+      const columnStyles: any = {};
+      for (let i = 0; i < totalColumns; i++) {
+        columnStyles[i.toString()] = { cellWidth: cellWidth };
+      }
+      
       autoTable(doc, {
         head: [['Horário', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado']],
         body: table.rows,
         startY: 20,
+        theme: 'grid',
+        styles: { cellPadding: 2, fontSize: 10, cellWidth: 'wrap' },
+        columnStyles: columnStyles
       });
     });
   
     doc.save('Horários.pdf');
-  };  
+  };
 
   return (
     <div>
-      <Button variant="contained" onClick={generatePDF}>
+      <Button variant="contained" onClick={generatePDF} disabled={scheduleData?.length === 0}>
         Exportar para PDF
       </Button>
     </div>
