@@ -3,17 +3,21 @@ import { Button } from '@mui/material';
 import { jsPDF } from "jspdf";
 import autoTable from 'jspdf-autotable';
 import useApi from '../../shared/useApi';
-import { SCHEDULE_ROUTE } from '../../shared/RoutesURL';
 import { ScheduleResponseProps } from '../../shared/Shared.types';
 import { HttpMethods } from '../../shared/Shared.consts';
+import { SCHEDULE_ROUTE } from '../../shared/RoutesURL';
 
-const ExportToPDF: React.FC = () => {
+type ExportToPDFProps = {
+  queryFilter: (route: string, isClass?: boolean) => string;
+}
+
+const ExportToPDF: React.FC<ExportToPDFProps> = ({ queryFilter }) => {
 
   const {
     data: scheduleData,
     refetch: scheduleRefetch,
   } = useApi<ScheduleResponseProps[]>(
-    SCHEDULE_ROUTE,
+    queryFilter(SCHEDULE_ROUTE),
     HttpMethods.GET,
   );
 
@@ -84,9 +88,13 @@ const ExportToPDF: React.FC = () => {
       }
       doc.text(`Professor(a): ${table.teacher}`, 10, 10);
       
-      const cellWidth = doc.internal.pageSize.getWidth() / totalColumns;
+      const firstColumnWidth = doc.getTextWidth('Horário');
+      const cellWidth = (doc.internal.pageSize.getWidth() - firstColumnWidth) / (totalColumns - 1);
       const columnStyles: any = {};
-      for (let i = 0; i < totalColumns; i++) {
+      
+      columnStyles['0'] = { cellWidth: 'auto' };
+      
+      for (let i = 1; i < totalColumns; i++) {
         columnStyles[i.toString()] = { cellWidth: cellWidth };
       }
       
@@ -95,7 +103,7 @@ const ExportToPDF: React.FC = () => {
         body: table.rows,
         startY: 20,
         theme: 'grid',
-        styles: { cellPadding: 2, fontSize: 10, cellWidth: 'wrap' },
+        styles: { cellPadding: 2, fontSize: 9, cellWidth: 'wrap' },
         columnStyles: columnStyles
       });
     });
@@ -105,8 +113,13 @@ const ExportToPDF: React.FC = () => {
 
   return (
     <div>
-      <Button variant="contained" onClick={generatePDF} disabled={scheduleData?.length === 0}>
-        Exportar para PDF
+      <Button 
+        variant="contained" 
+        onClick={generatePDF} 
+        disabled={scheduleData?.length === 0}
+        style={{ borderRadius: '1.5rem' }}
+      >
+        Exportar PDF
       </Button>
     </div>
   );

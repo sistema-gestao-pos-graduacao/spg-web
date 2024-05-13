@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { MainScreen } from '../../shared/Shared.style';
-import { Button, CircularProgress, Skeleton, Typography } from '@mui/material';
+import { Button, CircularProgress, Grid, Skeleton, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { EventProps, ManualEventsProps } from '../Schedule.types';
 import Disciplines from './Disciplines';
@@ -197,19 +197,21 @@ const ScheduleCoordenator: React.FC = () => {
           <Typography fontWeight={700} color="primary">
             {t('schedule.TITLE')}
           </Typography>
-          <ExportToPDF />
-          <Button
-            style={{ borderRadius: '1.5rem', gap: '.5rem' }}
-            size="small"
-            variant="contained"
-            onClick={saveHandler}
-            disabled={deleteItems?.length === 0 && saveItems.length === 0}
-          >
-            {(scheduleLoading || deleteLoading) && (
-              <CircularProgress size={'1rem'} color="secondary" />
-            )}
-            {t('schedule.SAVE')}
-          </Button>
+          <Grid sx={{ display: 'flex' }}>
+            <ExportToPDF queryFilter={queryFilter} />
+            <Button
+              style={{ borderRadius: '1.5rem', gap: '.5rem', marginLeft: '.4rem' }}
+              size="small"
+              variant="contained"
+              onClick={saveHandler}
+              disabled={deleteItems?.length === 0 && saveItems.length === 0}
+            >
+              {(scheduleLoading || deleteLoading) && (
+                <CircularProgress size={'1rem'} color="secondary" />
+              )}
+              {t('schedule.SAVE')}
+            </Button>
+          </Grid>
         </MainScreen.Title>
         <FilterField
           classScreen
