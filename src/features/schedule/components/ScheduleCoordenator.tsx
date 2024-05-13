@@ -15,6 +15,7 @@ import { SCHEDULE_ROUTE, SUBJECTS_ROUTE } from '../../shared/RoutesURL';
 import ScheduleTableCoordenator from './ScheduleTableCoordenator';
 import moment from 'moment';
 import FilterField from '../../shared/components/FilterField';
+import ExportToPDF from './ExportPDF';
 
 const ScheduleCoordenator: React.FC = () => {
   const { t } = useTranslation();
@@ -196,6 +197,7 @@ const ScheduleCoordenator: React.FC = () => {
           <Typography fontWeight={700} color="primary">
             {t('schedule.TITLE')}
           </Typography>
+          <ExportToPDF />
           <Button
             style={{ borderRadius: '1.5rem', gap: '.5rem' }}
             size="small"
