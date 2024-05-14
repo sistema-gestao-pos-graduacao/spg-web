@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { MainScreen } from '../../shared/Shared.style';
-import { Button, CircularProgress, Grid, Skeleton, Typography } from '@mui/material';
+import { Button, CircularProgress, Skeleton, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { EventProps, ManualEventsProps } from '../Schedule.types';
 import Disciplines from './Disciplines';
@@ -37,15 +37,15 @@ const ScheduleCoordenator: React.FC = () => {
       ) {
         const subjectFilter =
           filteredSubjects.length > 0
-            ? `${isClass ? 'subjectId' : 'id'}=${filteredSubjects.join('&id=')}`
+            ? `${isClass ? 'subjectId' : 'id'}=list(${filteredSubjects.join()})`
             : '';
         const classesFilter =
           filteredClasses.length > 0
-            ? `id=${filteredClasses.join('&id=')}`
+            ? `id=list(${filteredClasses.join()})`
             : '';
         const teacherFilter =
           filteredTeacher.length > 0
-            ? `teacherId=${filteredTeacher.join('&id=')}`
+            ? `teacherId=list(${filteredTeacher.join()})`
             : '';
         const filters = [subjectFilter, classesFilter, teacherFilter]
           .filter(Boolean)
@@ -57,7 +57,7 @@ const ScheduleCoordenator: React.FC = () => {
     },
     [filteredSubjects, filteredTeacher, filteredClasses],
   );
-
+  console.log('adawd: ', filteredTeacher);
   const {
     data: disciplinesData,
     isLoading,
@@ -158,12 +158,12 @@ const ScheduleCoordenator: React.FC = () => {
         return {
           ...referenceItem,
           title: item.subjectName,
-          id: `${referenceItem!.id}-${Math.random()}-${item.id}`,
+          id: `${referenceItem.id}-${Math.random()}-${item.id}`,
           start: new Date(item.startDateTime),
           end: new Date(item.endDateTime),
         };
       }) ?? [],
-    [scheduleGetData],
+    [scheduleGetData, disciplinesData],
   );
 
   useEffect(() => {
@@ -179,7 +179,7 @@ const ScheduleCoordenator: React.FC = () => {
         };
       }) ?? [],
     );
-  }, [scheduledItems, disciplinesData]);
+  }, [scheduledItems]);
 
   useEffect(() => {
     setEvents(scheduledItems);
@@ -197,23 +197,22 @@ const ScheduleCoordenator: React.FC = () => {
           <Typography fontWeight={700} color="primary">
             {t('schedule.TITLE')}
           </Typography>
-          <Grid sx={{ display: 'flex' }}>
-            <ExportToPDF queryFilter={queryFilter} />
-            <Button
-              style={{ borderRadius: '1.5rem', gap: '.5rem', marginLeft: '.4rem' }}
-              size="small"
-              variant="contained"
-              onClick={saveHandler}
-              disabled={deleteItems?.length === 0 && saveItems.length === 0}
-            >
-              {(scheduleLoading || deleteLoading) && (
-                <CircularProgress size={'1rem'} color="secondary" />
-              )}
-              {t('schedule.SAVE')}
-            </Button>
-          </Grid>
+          <ExportToPDF queryFilter={queryFilter} />
+          <Button
+            style={{ borderRadius: '1.5rem', gap: '.5rem' }}
+            size="small"
+            variant="contained"
+            onClick={saveHandler}
+            disabled={deleteItems?.length === 0 && saveItems.length === 0}
+          >
+            {(scheduleLoading || deleteLoading) && (
+              <CircularProgress size={'1rem'} color="secondary" />
+            )}
+            {t('schedule.SAVE')}
+          </Button>
         </MainScreen.Title>
         <FilterField
+          scheduleScreen
           classScreen
           filteredTeacher={filteredTeacher}
           setFilteredTeacher={setFilteredTeacher}
@@ -238,6 +237,7 @@ const ScheduleCoordenator: React.FC = () => {
               setManualEvents={setManualEvents}
               externalEvents={externalEvents}
               setExternalEvents={setExternalEvents}
+              filteredTeacher={filteredTeacher}
             />
           )}
         </MainScreen.Content>

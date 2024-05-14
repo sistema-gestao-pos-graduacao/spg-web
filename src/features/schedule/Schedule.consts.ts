@@ -15,3 +15,12 @@ export const CalendarTranlates = {
   agenda: 'Aulas',
   noEventsInRange: 'Não há eventos no período.',
 };
+
+export const NightHour = 19;
+
+export const StarDate = new Date(
+  new Date().getFullYear(),
+  new Date().getMonth(),
+  new Date().getDate(),
+  NightHour,
+);

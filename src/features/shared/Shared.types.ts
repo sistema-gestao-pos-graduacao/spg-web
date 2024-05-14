@@ -89,3 +89,11 @@ export interface ScheduleResponseProps {
   endDateTime: string;
   color: string;
 }
+export interface AvailableResponseProps {
+  id: number;
+  teacherId: number;
+  teacherName: string;
+  startDateTime: string;
+  endDateTime: string;
+  color: string;
+}

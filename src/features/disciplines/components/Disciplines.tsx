@@ -26,14 +26,14 @@ const Disciplines: React.FC = () => {
 
   const query = useMemo(() => {
     const subjectFilter =
-      filteredSubjects.length > 0 ? `id=${filteredSubjects.join('&id=')}` : '';
+      filteredSubjects.length > 0 ? `id=list(${filteredSubjects.join()})` : '';
 
     const classesFilter =
-      filteredClasses.length > 0 ? `id=${filteredClasses.join('&id=')}` : '';
+      filteredClasses.length > 0 ? `id=list(${filteredClasses.join()})` : '';
 
     const teacherFilter =
       filteredTeacher.length > 0
-        ? `teacherId=${filteredTeacher.join('&teacherId=')}`
+        ? `teacherId=list(${filteredTeacher.join()})`
         : visionMode === Roles.TEACHER && userLogged
           ? `teacherId=${userLogged.personId}`
           : '';

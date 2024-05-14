@@ -7,6 +7,8 @@ const PtBr = {
   MANUAL_DOCKING: 'ENCAIXE MANUAL',
   DISCIPLINES: 'Disciplina',
   CLASS: 'Aulas',
+  WARNING_CLASS_SCHEDULE:
+    'Uma ou mais aulas estão agendadas fora do horário disponível do professor.',
 };
 
 export default PtBr;

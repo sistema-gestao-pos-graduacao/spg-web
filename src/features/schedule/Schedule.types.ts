@@ -28,4 +28,5 @@ export interface ScheduleTableCoordenatorProps extends ScheduleTableProps {
   setManualEvents: StateAction<ManualEventsProps[]>;
   externalEvents: Partial<ManualEventsProps> | null;
   setExternalEvents: StateAction<Partial<ManualEventsProps> | null>;
+  filteredTeacher: number[];
 }

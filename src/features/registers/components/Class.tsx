@@ -12,49 +12,32 @@ import {
 import { MainScreen } from '../../shared/Shared.style';
 import { useTranslation } from 'react-i18next';
 import SchoolIcon from '@mui/icons-material/School';
-import { useForm } from 'react-hook-form';
-import { CurriculomResponseProps, FormClass } from '../Registers.types';
+import { CurriculomResponseProps } from '../Registers.types';
 import { useEffect, useState } from 'react';
 import CustomModal from '../../shared/components/CustomModal';
 import useApi from '../../shared/useApi';
-import {
-  COURSES_ROUTE,
-  CURRICULUM_ROUTE,
-  SUBJECTS_ROUTE,
-} from '../../shared/RoutesURL';
+import { CLASSES_ROUTE, CURRICULUM_ROUTE } from '../../shared/RoutesURL';
 import { HttpMethods } from '../../shared/Shared.consts';
-import { CoursesResponseProps } from '../../shared/Shared.types';
 
-const Registers = () => {
+const Class = () => {
   const { t } = useTranslation();
 
   const [open, setOpen] = useState(false);
-  const [curriculumId, setCurriculumId] = useState<number>();
-
-  const {
-    handleSubmit,
-    register,
-    reset,
-    watch,
-    formState: { errors, isValid },
-  } = useForm<FormClass>();
-
-  const watchSpecialization = watch('courseId');
+  const [curriculumId, setCurriculumId] = useState<string>('');
 
   const {
     isLoading: classLoading,
     isSuccess,
     refetch,
     remove,
-  } = useApi(SUBJECTS_ROUTE + '/SaveAll', HttpMethods.POST, false, watch());
-
-  const { data: courseData, isLoading: courseLoading } = useApi<
-    CoursesResponseProps[]
-  >(COURSES_ROUTE, HttpMethods.GET);
+  } = useApi(CLASSES_ROUTE, HttpMethods.POST, false, {
+    curriculumId: curriculumId,
+  });
 
   const { data: curriculumData, isLoading: curriculumLoading } = useApi<
     CurriculomResponseProps[]
   >(CURRICULUM_ROUTE, HttpMethods.GET);
+  console.log('curriculumId: ', curriculumId);
 
   const onSubmit = () => {
     refetch();
@@ -63,7 +46,6 @@ const Registers = () => {
   useEffect(() => {
     if (isSuccess) {
       setOpen(true);
-      reset();
       remove();
     }
   }, [isSuccess]);
@@ -102,72 +84,47 @@ const Registers = () => {
             alignItems: 'center',
           }}
         >
-          <form onSubmit={handleSubmit(onSubmit)} style={{ minWidth: '25rem' }}>
-            <FormControl>
-              <FormControl
-                fullWidth
-                sx={{ marginTop: '1rem' }}
-                disabled={courseLoading}
+          <div onSubmit={() => console.log('qdawd')} style={{ width: '25rem' }}>
+            <FormControl
+              fullWidth
+              sx={{ marginBottom: '1rem' }}
+              disabled={curriculumLoading}
+            >
+              <InputLabel id="curriculum-label">Matriz Curricular</InputLabel>
+              <Select
+                labelId="curriculum-label"
+                id="curriculum-select"
+                onChange={({ target }) => setCurriculumId(target.value)}
+                label="Matriz Curricular"
+                value={curriculumId}
+                MenuProps={{ PaperProps: { sx: { maxHeight: '10rem' } } }}
               >
-                <InputLabel id={`specialization-label`}>
-                  Especialização
-                </InputLabel>
+                {curriculumData?.map(({ id, name }) => (
+                  <MenuItem key={id} value={id}>
+                    {name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
-                <Select
-                  labelId={`specialization-label`}
-                  id={`specialization-select`}
-                  {...register(`courseId`, {
-                    required: 'Especialização é obrigatório',
-                  })}
-                  label="Especialização"
-                  error={!!errors.courseId?.message}
-                  sx={{ marginBottom: '1rem', width: '20rem' }}
-                  defaultValue=""
-                  MenuProps={{ PaperProps: { sx: { maxHeight: '10rem' } } }}
-                >
-                  {courseData?.map(({ id, name }) => (
-                    <MenuItem key={id} value={id}>
-                      {name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-
-              <FormControl
-                fullWidth
-                sx={{ marginBottom: '1rem' }}
-                disabled={curriculumLoading || !watchSpecialization}
-              >
-                <InputLabel id="curriculum-label">Matriz Curricular</InputLabel>
-                <Select
-                  labelId="curriculum-label"
-                  id="curriculum-select"
-                  onChange={({ target }) =>
-                    setCurriculumId(Number(target.value))
-                  }
-                  label="Matriz Curricular"
-                  value={curriculumId}
-                  MenuProps={{ PaperProps: { sx: { maxHeight: '10rem' } } }}
-                >
-                  {curriculumData?.map(({ id, name }) => (
-                    <MenuItem key={id} value={id}>
-                      {name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-
-              <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <FormControl
+              sx={{
+                display: 'flex',
+                alignItems: 'flex-end',
+                width: '100%',
+              }}
+            >
+              <Box>
                 <Button
                   variant="contained"
-                  disabled={!isValid}
+                  disabled={!curriculumId}
                   style={{
                     height: '2rem',
-                    width: '50%',
                     borderRadius: '1rem',
                     gap: '.5rem',
                   }}
-                  type="submit"
+                  type="button"
+                  onClick={onSubmit}
                 >
                   {classLoading && (
                     <CircularProgress size={'1rem'} color="secondary" />
@@ -176,7 +133,7 @@ const Registers = () => {
                 </Button>
               </Box>
             </FormControl>
-          </form>
+          </div>
         </Grid>
 
         <CustomModal
@@ -191,4 +148,4 @@ const Registers = () => {
   );
 };
 
-export default Registers;
+export default Class;

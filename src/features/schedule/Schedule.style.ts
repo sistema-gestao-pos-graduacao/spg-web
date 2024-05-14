@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { Themes } from './../shared/Shared.consts';
+import { ToastError } from '../shared/Shared.style';
 
 export const ScheduledTable = {
   Content: styled.div`
@@ -159,4 +160,8 @@ export const DisciplineListHeader = styled.div`
   display: flex;
   justify-content: space-between;
   padding-right: 0.5rem;
+`;
+
+export const ToastWarning = styled(ToastError)`
+  background-color: ${({ theme }) => theme.warning};
 `;

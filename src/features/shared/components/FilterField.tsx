@@ -26,8 +26,10 @@ const FilterField: React.FC<{
   setFilteredTeacher: StateAction<number[]>;
   filteredClasses: number[];
   setFilteredClasses: StateAction<number[]>;
+  scheduleScreen?: boolean;
 }> = ({
   classScreen,
+  scheduleScreen,
   filteredTeacher,
   filteredSubjects,
   filteredClasses,
@@ -47,9 +49,11 @@ const FilterField: React.FC<{
   >(
     visionMode === Roles.TEACHER
       ? `${SUBJECTS_ROUTE}?teacherId=${userLogged?.personId}`
-      : SUBJECTS_ROUTE,
+      : `${SUBJECTS_ROUTE}${filteredTeacher.length > 0 ? `?teacherId=list(${filteredTeacher.join()})` : ''}`,
     HttpMethods.GET,
   );
+
+  console.log('filteredTeacher: ', filteredTeacher);
 
   return (
     <div style={{ display: 'flex', gap: '1rem', margin: '.5rem 0' }}>
@@ -106,12 +110,20 @@ const FilterField: React.FC<{
             label={t('shared.TEACHERS')}
             sx={{ width: '20rem' }}
             MenuProps={{ PaperProps: { sx: { maxHeight: '15rem' } } }}
-            onChange={(e: SelectChangeEvent<number[]>) =>
-              setFilteredTeacher(e.target.value as number[])
-            }
+            onChange={(e: SelectChangeEvent<number[]>) => {
+              console.log('eeeeeee: ', e.target.value);
+              if (scheduleScreen)
+                setFilteredTeacher(
+                  filteredTeacher.includes(Number(e.target.value))
+                    ? []
+                    : [Number(e.target.value)],
+                );
+              else setFilteredTeacher(e.target.value as number[]);
+              setFilteredSubjects([]);
+            }}
             disabled={personLoading}
             size={'small'}
-            multiple
+            multiple={!scheduleScreen}
             value={filteredTeacher}
           >
             {personData?.map(({ id, name }) => (

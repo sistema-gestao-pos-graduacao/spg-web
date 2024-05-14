@@ -6,6 +6,7 @@ export const Themes = {
   gray: '#C2BEBE',
   light_gray: '#E4E4E4',
   error: '#AD0000',
+  warning: '#D3AF00',
 };
 
 export const DefaultError = {
