@@ -4,6 +4,7 @@ import RegisterCard from './RegisterCard';
 import ArticleIcon from '@mui/icons-material/Article';
 import SchoolIcon from '@mui/icons-material/School';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import { MainScreen } from '../../shared/Shared.style';
 import { useTranslation } from 'react-i18next';
 import { RegisterContent } from '../Registers.style';
@@ -28,10 +29,10 @@ const Registers = () => {
             url="matriz"
           />
           <RegisterCard
-            icon={SchoolIcon}
-            title={t('registers.CARDTITLEDISCIPLINES')}
-            description={t('registers.CARDDESCRIPTIONDISCIPLINES')}
-            url="disciplinas"
+            icon={GroupAddIcon}
+            title={t('registers.CARDTITLECLASS')}
+            description={t('registers.CARDDESCRIPTIONCLASS')}
+            url="turma"
           />
           <RegisterCard
             icon={PersonAddIcon}
@@ -40,10 +41,10 @@ const Registers = () => {
             url="professor"
           />
           <RegisterCard
-            icon={PersonAddIcon}
-            title={t('registers.CARDTITLECLASS')}
-            description={t('registers.CARDDESCRIPTIONCLASS')}
-            url="turma"
+            icon={SchoolIcon}
+            title={t('registers.CARDTITLEDISCIPLINES')}
+            description={t('registers.CARDDESCRIPTIONDISCIPLINES')}
+            url="disciplinas"
           />
         </RegisterContent>
       </MainScreen.Content>
