@@ -5,8 +5,12 @@ import { Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { HttpMethods, Roles, Themes } from '../../shared/Shared.consts';
 import useApi from '../../shared/useApi';
-import { SUBJECTS_ROUTE } from '../../shared/RoutesURL';
-import { ContextProps, SubjectsResponseProps } from '../../shared/Shared.types';
+import { CLASSES_ROUTE, SUBJECTS_ROUTE } from '../../shared/RoutesURL';
+import {
+  ClassResponseProps,
+  ContextProps,
+  SubjectsResponseProps,
+} from '../../shared/Shared.types';
 import FolderLoading from './FolderLoading';
 import { GlobalContext } from '../../shared/Context';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
@@ -22,14 +26,25 @@ const Disciplines: React.FC = () => {
   const [filteredClasses, setFilteredClasses] = useState<number[]>([]);
   const { visionMode, userLogged } = useContext<ContextProps>(GlobalContext);
 
+  const { data: classData, isLoading: classLoading } = useApi<
+    ClassResponseProps[]
+  >(
+    filteredClasses.length === 0
+      ? CLASSES_ROUTE
+      : `${CLASSES_ROUTE}?id=list(${filteredClasses.join()})`,
+    HttpMethods.GET,
+  );
   const classScreen = pathname === '/';
+
+  const curriculumId = useMemo(() => {
+    if (classData && classData.length > 0)
+      return classData.find(({ id }) => id === Number(pathname.split('/')[1]))
+        ?.curriculumId;
+  }, [pathname, classData]);
 
   const query = useMemo(() => {
     const subjectFilter =
       filteredSubjects.length > 0 ? `id=list(${filteredSubjects.join()})` : '';
-
-    const classesFilter =
-      filteredClasses.length > 0 ? `id=list(${filteredClasses.join()})` : '';
 
     const teacherFilter =
       filteredTeacher.length > 0
@@ -38,26 +53,26 @@ const Disciplines: React.FC = () => {
           ? `teacherId=${userLogged.personId}`
           : '';
 
-    const filters = [subjectFilter, classesFilter, teacherFilter]
-      .filter(Boolean)
-      .join('&');
-    const queryParams = filters ? `?${filters}` : '';
+    const filters = [subjectFilter, teacherFilter].filter(Boolean).join('&');
+    const queryParams = filters ? `&${filters}` : '';
 
-    return `${SUBJECTS_ROUTE}${queryParams}`;
+    return `${SUBJECTS_ROUTE}?curriculumId=${curriculumId}${queryParams}`;
   }, [
     filteredSubjects,
     filteredTeacher,
     filteredClasses,
     userLogged,
     visionMode,
+    curriculumId,
   ]);
 
   const { data: disciplinesData, isLoading } = useApi<SubjectsResponseProps[]>(
     query,
     HttpMethods.GET,
+    !!curriculumId,
   );
 
-  const getContent = () => {
+  const getContentDiscipline = () => {
     if (isLoading) {
       return Array(12)
         .fill(0)
@@ -76,9 +91,31 @@ const Disciplines: React.FC = () => {
         </NoContent>
       );
     }
-    return disciplinesData?.map((discipline) => (
-      <Folder key={discipline.id} discipline={discipline} />
+    return disciplinesData.map((data) => (
+      <Folder key={data.id} discipline={data} />
     ));
+  };
+
+  const getContentClass = () => {
+    if (classLoading) {
+      return Array(12)
+        .fill(0)
+        .map((_, index) => <FolderLoading key={index} />);
+    }
+    if (!classData || classData.length === 0) {
+      return (
+        <NoContent>
+          <FolderOpenIcon
+            sx={{ width: '3rem', height: '3rem' }}
+            color="primary"
+          />
+          <Typography fontSize="1.2rem" fontWeight={700} color="primary">
+            {t('disciplines.NO_CONTENT')}
+          </Typography>
+        </NoContent>
+      );
+    }
+    return classData.map((data) => <Folder key={data.id} discipline={data} />);
   };
 
   return (
@@ -99,7 +136,9 @@ const Disciplines: React.FC = () => {
         filteredClasses={filteredClasses}
         setFilteredClasses={setFilteredClasses}
       />
-      <MainScreen.Content>{getContent()}</MainScreen.Content>
+      <MainScreen.Content>
+        {classScreen ? getContentClass() : getContentDiscipline()}
+      </MainScreen.Content>
     </MainScreen.Container>
   );
 };

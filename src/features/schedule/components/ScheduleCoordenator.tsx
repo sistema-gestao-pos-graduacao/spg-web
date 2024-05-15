@@ -16,6 +16,8 @@ import ScheduleTableCoordenator from './ScheduleTableCoordenator';
 import moment from 'moment';
 import FilterField from '../../shared/components/FilterField';
 import ExportToPDF from './ExportPDF';
+import { NoContent } from '../../disciplines/Disciplines.style';
+import FactCheckIcon from '@mui/icons-material/FactCheck';
 
 const ScheduleCoordenator: React.FC = () => {
   const { t } = useTranslation();
@@ -28,44 +30,73 @@ const ScheduleCoordenator: React.FC = () => {
   const [filteredSubjects, setFilteredSubjects] = useState<number[]>([]);
   const [filteredClasses, setFilteredClasses] = useState<number[]>([]);
 
-  const queryFilter = useCallback(
-    (route: string, isClass?: boolean) => {
-      if (
+  const [curriculumId, setCurriculumId] = useState<number[]>([]);
+
+  const queryFilterSubject = useCallback(
+    (route: string) => {
+      const hasFilters =
         filteredSubjects.length > 0 ||
         filteredTeacher.length > 0 ||
-        filteredClasses.length > 0
-      ) {
+        filteredClasses.length > 0;
+
+      let filters = '';
+
+      if (hasFilters) {
         const subjectFilter =
           filteredSubjects.length > 0
-            ? `${isClass ? 'subjectId' : 'id'}=list(${filteredSubjects.join()})`
+            ? `id=list(${filteredSubjects.join()})`
             : '';
         const classesFilter =
-          filteredClasses.length > 0
-            ? `id=list(${filteredClasses.join()})`
+          curriculumId.length > 0
+            ? `curriculumId=list(${Array.from(new Set(curriculumId)).join()})`
             : '';
         const teacherFilter =
           filteredTeacher.length > 0
             ? `teacherId=list(${filteredTeacher.join()})`
             : '';
-        const filters = [subjectFilter, classesFilter, teacherFilter]
+
+        filters = [subjectFilter, classesFilter, teacherFilter]
           .filter(Boolean)
           .join('&');
-        const queryParams = filters ? `?${filters}` : '';
-        return `${route}${queryParams}`;
       }
-      return route;
+
+      const queryParams = filters ? `?${filters}` : '';
+      return `${route}${queryParams}`;
     },
-    [filteredSubjects, filteredTeacher, filteredClasses],
+    [filteredSubjects, filteredTeacher, filteredClasses, curriculumId],
   );
-  console.log('adawd: ', filteredTeacher);
-  const {
-    data: disciplinesData,
-    isLoading,
-    refetch: disciplineRefetch,
-  } = useApi<SubjectsResponseProps[]>(
-    queryFilter(SUBJECTS_ROUTE),
+  const queryFilterClass = useCallback(
+    (route: string) => {
+      const hasFilters =
+        filteredSubjects.length > 0 ||
+        filteredTeacher.length > 0 ||
+        filteredClasses.length > 0;
+
+      let filters = '';
+
+      if (hasFilters) {
+        const subjectFilter =
+          filteredSubjects.length > 0
+            ? `subjectId=list(${filteredSubjects.join()})`
+            : '';
+
+        const teacherFilter =
+          filteredTeacher.length > 0
+            ? `teacherId=list(${filteredTeacher.join()})`
+            : '';
+
+        filters = [subjectFilter, teacherFilter].filter(Boolean).join('&');
+      }
+
+      const queryParams = filters ? `?${filters}` : '';
+      return `${route}${queryParams}`;
+    },
+    [filteredSubjects, filteredTeacher, filteredClasses, curriculumId],
+  );
+
+  const { data: disciplinesData, isLoading } = useApi<SubjectsResponseProps[]>(
+    queryFilterSubject(SUBJECTS_ROUTE),
     HttpMethods.GET,
-    false,
   );
 
   const {
@@ -73,7 +104,9 @@ const ScheduleCoordenator: React.FC = () => {
     isLoading: scheduleGetLoading,
     refetch: scheduleGetRefetch,
   } = useApi<ScheduleResponseProps[]>(
-    queryFilter(SCHEDULE_ROUTE, true),
+    queryFilterClass(
+      `${SCHEDULE_ROUTE}/filteredByClass/${filteredClasses[0] ?? 0}`,
+    ),
     HttpMethods.GET,
   );
 
@@ -121,6 +154,7 @@ const ScheduleCoordenator: React.FC = () => {
           startDateTime: moment(event.start).format('YYYY-MM-DDTHH:mm:ss'),
           endDateTime: moment(event.end).format('YYYY-MM-DDTHH:mm:ss'),
           color: event.color,
+          relatedClassesIds: filteredClasses,
         })),
     [events],
   );
@@ -131,10 +165,6 @@ const ScheduleCoordenator: React.FC = () => {
     false,
     saveItems,
   );
-
-  useEffect(() => {
-    disciplineRefetch();
-  }, [filteredSubjects, filteredTeacher, filteredClasses]);
 
   useEffect(() => {
     if (!scheduleLoading && !deleteLoading) {
@@ -197,7 +227,7 @@ const ScheduleCoordenator: React.FC = () => {
           <Typography fontWeight={700} color="primary">
             {t('schedule.TITLE')}
           </Typography>
-          <ExportToPDF queryFilter={queryFilter} />
+          <ExportToPDF scheduleData={scheduleGetData ?? []} />
           <Button
             style={{ borderRadius: '1.5rem', gap: '.5rem' }}
             size="small"
@@ -212,42 +242,61 @@ const ScheduleCoordenator: React.FC = () => {
           </Button>
         </MainScreen.Title>
         <FilterField
-          scheduleScreen
           classScreen
+          scheduleScreen
           filteredTeacher={filteredTeacher}
           setFilteredTeacher={setFilteredTeacher}
           filteredSubjects={filteredSubjects}
           setFilteredSubjects={setFilteredSubjects}
           filteredClasses={filteredClasses}
           setFilteredClasses={setFilteredClasses}
+          setCurriculumId={setCurriculumId}
         />
-        <MainScreen.Content>
-          {isLoading || scheduleGetLoading ? (
-            <Skeleton
-              width="100%"
-              height="100%"
-              variant="rectangular"
-              sx={{ borderRadius: '1rem', animationDuration: '1.5s' }}
+        {filteredClasses.length > 0 ? (
+          <MainScreen.Content>
+            {isLoading || scheduleGetLoading ? (
+              <Skeleton
+                width="100%"
+                height="100%"
+                variant="rectangular"
+                sx={{ borderRadius: '1rem', animationDuration: '1.5s' }}
+              />
+            ) : (
+              <ScheduleTableCoordenator
+                events={events}
+                setEvents={setEvents}
+                manualEvents={manualEvents}
+                setManualEvents={setManualEvents}
+                externalEvents={externalEvents}
+                setExternalEvents={setExternalEvents}
+                filteredTeacher={filteredTeacher}
+              />
+            )}
+          </MainScreen.Content>
+        ) : (
+          <NoContent>
+            <FactCheckIcon
+              sx={{ width: '3rem', height: '3rem' }}
+              color="primary"
             />
-          ) : (
-            <ScheduleTableCoordenator
-              events={events}
-              setEvents={setEvents}
-              manualEvents={manualEvents}
-              setManualEvents={setManualEvents}
-              externalEvents={externalEvents}
-              setExternalEvents={setExternalEvents}
-              filteredTeacher={filteredTeacher}
-            />
-          )}
-        </MainScreen.Content>
+            <Typography fontSize="1.2rem" fontWeight={700} color="primary">
+              {t('schedule.SELECT_CLASS')}
+            </Typography>
+          </NoContent>
+        )}
       </MainScreen.Container>
-      <Disciplines
-        manualEvents={manualEvents.filter(({ classNumber }) => classNumber > 0)}
-        externalEvents={externalEvents}
-        setExternalEvents={setExternalEvents}
-        isLoading={isLoading || scheduleGetLoading}
-      />
+      {
+        <Disciplines
+          manualEvents={
+            filteredClasses.length > 0
+              ? manualEvents.filter(({ classNumber }) => classNumber > 0)
+              : []
+          }
+          externalEvents={externalEvents}
+          setExternalEvents={setExternalEvents}
+          isLoading={isLoading || scheduleGetLoading}
+        />
+      }
     </ScheduledContent>
   );
 };

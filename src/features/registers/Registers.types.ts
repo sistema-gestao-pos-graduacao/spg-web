@@ -17,7 +17,7 @@ export type FormDiscipline = Disciplines[];
 export type Disciplines = {
   name?: string;
   teacherId?: string;
-  hours?: string;
+  numberOfClasses?: string;
   prevId?: number;
 };
 

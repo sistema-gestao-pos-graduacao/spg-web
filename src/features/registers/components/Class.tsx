@@ -37,7 +37,6 @@ const Class = () => {
   const { data: curriculumData, isLoading: curriculumLoading } = useApi<
     CurriculomResponseProps[]
   >(CURRICULUM_ROUTE, HttpMethods.GET);
-  console.log('curriculumId: ', curriculumId);
 
   const onSubmit = () => {
     refetch();
@@ -84,7 +83,7 @@ const Class = () => {
             alignItems: 'center',
           }}
         >
-          <div onSubmit={() => console.log('qdawd')} style={{ width: '25rem' }}>
+          <div style={{ width: '25rem' }}>
             <FormControl
               fullWidth
               sx={{ marginBottom: '1rem' }}

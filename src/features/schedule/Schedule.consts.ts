@@ -24,3 +24,9 @@ export const StarDate = new Date(
   new Date().getDate(),
   NightHour,
 );
+export const EndDate = new Date(
+  new Date().getFullYear(),
+  new Date().getMonth(),
+  new Date().getDate(),
+  23,
+);

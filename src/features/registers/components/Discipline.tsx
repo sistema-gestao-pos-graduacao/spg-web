@@ -40,7 +40,7 @@ const Registers = () => {
     {
       name: '',
       teacherId: '',
-      hours: '',
+      numberOfClasses: '',
     },
   ];
 
@@ -69,7 +69,7 @@ const Registers = () => {
         .map((item) => ({
           ...item,
           curriculumId,
-          hours: Number(item.hours),
+          numberOfClasses: Number(item.numberOfClasses),
           teacherId: Number(item.teacherId),
         })),
     [formInputs],
@@ -113,7 +113,7 @@ const Registers = () => {
       {
         name: '',
         teacherId: '',
-        hours: '',
+        numberOfClasses: '',
       },
     ]);
   };
@@ -201,7 +201,8 @@ const Registers = () => {
             isValid={[
               !!curriculumId && !subjectLoading,
               formInputs.every(
-                ({ hours, name, teacherId }) => name && teacherId && hours,
+                ({ numberOfClasses, name, teacherId }) =>
+                  name && teacherId && numberOfClasses,
               ),
             ]}
             step1={
@@ -276,12 +277,16 @@ const Registers = () => {
                       </FormControl>
 
                       <TextField
-                        key={'hours' + index}
+                        key={'numberOfClasses' + index}
                         label="Número de Aulas"
-                        value={String(formInputs[index].hours) ?? ''}
+                        value={String(formInputs[index].numberOfClasses) ?? ''}
                         type="number"
                         onChange={(e) =>
-                          editFieldHandler(e.target.value, index, 'hours')
+                          editFieldHandler(
+                            e.target.value,
+                            index,
+                            'numberOfClasses',
+                          )
                         }
                         sx={{ marginRight: '1rem', width: '11rem' }}
                         InputProps={{ inputProps: { min: 1 } }}

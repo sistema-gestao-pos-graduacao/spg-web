@@ -97,3 +97,11 @@ export interface AvailableResponseProps {
   endDateTime: string;
   color: string;
 }
+
+export interface ClassResponseProps {
+  id: number;
+  curriculumId: number;
+  curriculumName: string;
+  name: string;
+  students: [];
+}

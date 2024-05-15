@@ -20,7 +20,7 @@ import moment from 'moment';
 import 'moment/locale/pt-br';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { CalendarTranlates } from '../Schedule.consts';
+import { CalendarTranlates, StarDate } from '../Schedule.consts';
 import CloseIcon from '@mui/icons-material/Close';
 import { Themes } from '../../shared/Shared.consts';
 import { Typography } from '@mui/material';
@@ -139,6 +139,7 @@ const ScheduleTableTeacher: React.FC<ScheduleTableProps> = ({
         timeslots={6}
         onSelectSlot={setTeacherScheduleds}
         selectable={true}
+        min={StarDate}
       />
     </CalendarContainer>
   );

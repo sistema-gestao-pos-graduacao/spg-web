@@ -18,7 +18,12 @@ import moment from 'moment';
 import 'moment/locale/pt-br';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { CalendarTranlates, NightHour, StarDate } from '../Schedule.consts';
+import {
+  CalendarTranlates,
+  EndDate,
+  NightHour,
+  StarDate,
+} from '../Schedule.consts';
 import CloseIcon from '@mui/icons-material/Close';
 import useApi from '../../shared/useApi';
 import { AvailableResponseProps } from '../../shared/Shared.types';
@@ -54,10 +59,9 @@ const ScheduleTableCoordenator: React.FC<ScheduleTableCoordenatorProps> = ({
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [currentEvent, setCurrentEvent] = useState<EventProps | null>(null);
   const [currentView, setCurrentView] = useState<string>('month');
+  const [currentDay, setCurrentDay] = useState<Date>();
   const [warningView, setWarningView] = useState<boolean>(false);
   const [mantainedToast, setMantainedToast] = useState<boolean>(false);
-
-  console.log;
 
   const { data: availableData } = useApi<AvailableResponseProps[]>(
     `${TEACHER_ROUTE}?teacherId=${filteredTeacher[0]}`,
@@ -74,8 +78,9 @@ const ScheduleTableCoordenator: React.FC<ScheduleTableCoordenatorProps> = ({
         startTime.getHours() * 60 + startTime.getMinutes();
       const endTotalMinutes = endTime.getHours() * 60 + endTime.getMinutes();
       const dateTotalMinutes = date.getHours() * 60 + date.getMinutes();
-
+      const isSameDayOfWeek = date.getDay() === startTime.getDay();
       return (
+        isSameDayOfWeek &&
         startTotalMinutes <= dateTotalMinutes &&
         dateTotalMinutes < endTotalMinutes
       );
@@ -178,7 +183,7 @@ const ScheduleTableCoordenator: React.FC<ScheduleTableCoordenatorProps> = ({
     if (currentView === 'month' && checkIncludedDateMonth(date))
       return {
         style: {
-          backgroundColor: '#d7ffb3', // Define a cor para os dias disponíveis
+          backgroundColor: '#d7ffb3',
         },
       };
     return {};
@@ -197,11 +202,26 @@ const ScheduleTableCoordenator: React.FC<ScheduleTableCoordenatorProps> = ({
 
   useEffect(() => {
     if (availableData && availableData.length > 0) {
+      const eventFilterDay = events.filter(
+        ({ start }) =>
+          new Date(start!).getMonth() === currentDay?.getMonth() &&
+          new Date(start!).getDate() === currentDay?.getDate(),
+      );
+
+      const formatEndDate = (end: Date) => {
+        const endDate = new Date(end);
+        return new Date(endDate.setMinutes(end.getMinutes() - 10));
+      };
+
       const showWarning =
         currentView === 'month'
           ? !events?.every(({ start }) => checkIncludedDateMonth(start as Date))
-          : !events?.every(({ start }) => checkIncludedDate(start as Date)) &&
-            !events?.every(({ end }) => checkIncludedDate(end as Date));
+          : !eventFilterDay.every(({ start }) =>
+              checkIncludedDate(start as Date),
+            ) ||
+            !eventFilterDay.every(({ end }) =>
+              checkIncludedDate(formatEndDate(end as Date)),
+            );
 
       if (showWarning) {
         setWarningView(true);
@@ -233,7 +253,9 @@ const ScheduleTableCoordenator: React.FC<ScheduleTableCoordenatorProps> = ({
         timeslots={6}
         selectable={false}
         min={StarDate}
+        max={EndDate}
         onView={setCurrentView}
+        onNavigate={setCurrentDay}
       />
       {currentEvent && (
         <ScheduleModal

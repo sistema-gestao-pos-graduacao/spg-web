@@ -34,7 +34,8 @@ const PtBr = {
   TITLECLASS: 'CADASTROS > TURMA',
   SUBTITLECLASS: 'Cadastro de Turma',
   SUCCESSTITLECLASS: 'Turma Cadastrada com Sucesso!',
-  SUCCESSMESSAGECLASS: '',
+  SUCCESSMESSAGECLASS:
+    'Agora a turma está cadastrada e disponível para montar os horários.',
 };
 
 export default PtBr;
