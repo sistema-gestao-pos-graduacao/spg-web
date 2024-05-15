@@ -8,17 +8,40 @@ import {
   FormControl,
   Checkbox,
   FormControlLabel,
+  InputLabel,
+  OutlinedInput,
+  InputAdornment,
+  IconButton,
 } from '@mui/material';
-import { useMutation } from 'react-query';
-import { Themes } from '../../shared/Shared.consts';
-import { Link, useNavigate } from 'react-router-dom';
+import { useContext, useEffect } from 'react';
+import { HttpMethods, Themes } from '../../shared/Shared.consts';
+import { useNavigate } from 'react-router-dom';
 import { FormValues, LoginCardProps } from '../Login.types';
 import { useTranslation } from 'react-i18next';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import CircularProgress from '@mui/material/CircularProgress';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { useState } from 'react';
+import { CONTEXT_ROUTE, LOGIN_ROUTE } from '../../shared/RoutesURL';
+import useApi from '../../shared/useApi';
+import { ContextProps, ContextResponseProps } from '../../shared/Shared.types';
+import { GlobalContext } from '../../shared/Context';
+import ForgotPasswordModal from './ForgotPasswordModal';
 
 const LoginCard = ({ setLogged }: LoginCardProps) => {
   const navigate = useNavigate();
+  const { setUserLogged } = useContext<ContextProps>(GlobalContext);
+
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [passwordModal, setPasswordModal] = useState<boolean>(false);
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+  const handleMouseDownPassword = (
+    event: React.MouseEvent<HTMLButtonElement>,
+  ) => {
+    event.preventDefault();
+  };
 
   const {
     handleSubmit,
@@ -27,33 +50,43 @@ const LoginCard = ({ setLogged }: LoginCardProps) => {
     formState: { errors },
   } = useForm<FormValues>({
     defaultValues: {
-      username: '',
-      password: '',
+      username: 'mestre',
+      password: 'Pucmin@s1234',
     },
   });
 
-  const { mutate: loginMutation, isLoading: isLoadingLogin } = useMutation(() =>
-    fetch('https://app-i575ajhit22gu.azurewebsites.net/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({
-        username: watch('username'),
-        password: btoa(watch('password')),
-      }),
-    }).then((res) => {
-      setLogged(res.ok);
-      navigate('/');
-    }),
+  const { isLoading, isSuccess, refetch } = useApi(
+    LOGIN_ROUTE,
+    HttpMethods.POST,
+    false,
+    {
+      username: watch('username'),
+      password: btoa(watch('password')),
+    },
   );
 
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
+  const {
+    data,
+    isLoading: contextLoading,
+    isSuccess: contextSuccess,
+    refetch: contextRefetch,
+  } = useApi<ContextResponseProps>(CONTEXT_ROUTE, HttpMethods.GET, false);
+
+  useEffect(() => {
+    if (isSuccess && data && contextSuccess) {
+      setUserLogged(data);
+      setLogged(true);
+      navigate('/');
+    }
+  }, [contextSuccess]);
+
+  useEffect(() => {
+    if (isSuccess) contextRefetch();
+  }, [isSuccess]);
+
+  const onSubmit: SubmitHandler<FormValues> = async (data) => {
     if (data.username && data.password) {
-      try {
-        loginMutation();
-      } catch (error) {
-        console.error('Login error:', error);
-      }
+      refetch();
     }
   };
 
@@ -63,14 +96,15 @@ const LoginCard = ({ setLogged }: LoginCardProps) => {
     <form onSubmit={handleSubmit(onSubmit)}>
       <Card
         sx={{
-          width: 450,
-          height: 550,
-          borderRadius: '20px',
-          paddingX: '15px',
+          width: '27rem',
+          height: '35rem',
+          paddingX: '1rem',
+          borderRadius: '1.5rem',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
           backgroundColor: `${Themes.light_gray}`,
+          marginRight: '2.5rem',
         }}
       >
         <CardContent
@@ -91,14 +125,29 @@ const LoginCard = ({ setLogged }: LoginCardProps) => {
               helperText={errors.username?.message}
               error={!!errors.username?.message}
             />
-            <TextField
-              label="Password"
-              type="password"
+          </FormControl>
+          <FormControl sx={{ width: '100%' }}>
+            <InputLabel htmlFor="outlined-adornment-password">
+              Password
+            </InputLabel>
+            <OutlinedInput
+              id="outlined-adornment-password"
+              type={showPassword ? 'text' : 'password'}
               {...register('password', { required: 'Password is required' })}
-              autoComplete="current-password"
-              style={{ paddingBottom: 10 }}
-              helperText={errors.password?.message}
               error={!!errors.password?.message}
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    onMouseDown={handleMouseDownPassword}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              }
+              label="Password"
             />
             <FormControlLabel
               control={<Checkbox defaultChecked />}
@@ -111,6 +160,7 @@ const LoginCard = ({ setLogged }: LoginCardProps) => {
                 </Typography>
               }
             />
+            <span>{}</span>
           </FormControl>
         </CardContent>
         <CardActions
@@ -123,26 +173,33 @@ const LoginCard = ({ setLogged }: LoginCardProps) => {
         >
           <Button
             variant="contained"
-            style={{ height: '2rem', width: '50%', borderRadius: 20 }}
+            style={{
+              height: '2rem',
+              width: '50%',
+              borderRadius: '1rem',
+              gap: '.5rem',
+            }}
             type="submit"
           >
-            {isLoadingLogin && <CircularProgress size={24} color="primary" />}
+            {(isLoading || contextLoading) && (
+              <CircularProgress size={'1rem'} color="secondary" />
+            )}
             <Typography variant="caption">{t('login.LOGINBUTTON')}</Typography>
           </Button>
           <Button
             variant="contained"
             style={{ height: '2rem', width: '50%', borderRadius: 20 }}
-            disabled={isLoadingLogin}
-            onClick={() => setLogged(true)}
+            disabled={isLoading}
+            onClick={() => setPasswordModal(true)}
           >
-            <Link to={'/'}>
-              <Typography variant="caption">
-                {t('login.FORGOTBUTTON')}
-              </Typography>
-            </Link>
+            <Typography variant="caption">{t('login.FORGOTBUTTON')}</Typography>
           </Button>
         </CardActions>
       </Card>
+      <ForgotPasswordModal
+        passwordModal={passwordModal}
+        setPasswordModal={setPasswordModal}
+      />
     </form>
   );
 };

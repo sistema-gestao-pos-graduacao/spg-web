@@ -4,6 +4,7 @@ import shared from '../features/shared/locales/PtBr';
 import disciplines from '../features/disciplines/locales/PtBr';
 import calendar from '../features/calendar/locales/PtBr';
 import schedule from '../features/schedule/locales/PtBr';
+import registers from '../features/registers/locales/PtBr';
 
 const ptBr = {
   translation: {
@@ -13,6 +14,7 @@ const ptBr = {
     disciplines,
     calendar,
     schedule,
+    registers,
   },
 };
 

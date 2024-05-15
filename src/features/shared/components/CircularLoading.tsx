@@ -2,9 +2,9 @@ import { CircularProgress } from '@mui/material';
 import React from 'react';
 import { CircularLoadingContent } from './../Shared.style';
 
-const CircularLoading: React.FC = () => {
+const CircularLoading: React.FC<{ width?: string }> = ({ width }) => {
   return (
-    <CircularLoadingContent>
+    <CircularLoadingContent width={width}>
       <CircularProgress color="primary" />
     </CircularLoadingContent>
   );

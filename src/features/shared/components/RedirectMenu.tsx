@@ -9,7 +9,9 @@ import { Themes } from '../Shared.consts';
 const RedirectMenu: React.FC<{
   label: string;
   listItems: string[];
-}> = ({ label, listItems }) => {
+  isLoading?: boolean;
+  isLink?: boolean;
+}> = ({ label, listItems, isLoading, isLink }) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -24,7 +26,13 @@ const RedirectMenu: React.FC<{
       <Button
         id="basic-button"
         onClick={handleClick}
-        endIcon={<KeyboardArrowDownOutlined color={'primary'} />}
+        endIcon={
+          <KeyboardArrowDownOutlined
+            color={'primary'}
+            sx={{ opacity: isLoading ? 0.2 : 1 }}
+          />
+        }
+        disabled={isLoading}
       >
         {label}
       </Button>
@@ -33,12 +41,19 @@ const RedirectMenu: React.FC<{
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
+        sx={{ maxHeight: '25rem' }}
       >
-        {listItems.map((item) => (
-          <Link key={item} to={item} style={{ color: Themes.medium_primary }}>
-            <MenuItem value={item}>{item}</MenuItem>
-          </Link>
-        ))}
+        {listItems.map((item) =>
+          isLink ? (
+            <Link key={item} to={item} style={{ color: Themes.medium_primary }}>
+              <MenuItem value={item}>{item}</MenuItem>
+            </Link>
+          ) : (
+            <MenuItem key={item} value={item}>
+              {item}
+            </MenuItem>
+          ),
+        )}
       </Menu>
     </div>
   );

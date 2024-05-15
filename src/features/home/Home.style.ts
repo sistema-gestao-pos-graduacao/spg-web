@@ -73,8 +73,30 @@ export const Sidebar = {
   `,
   Config: styled.span`
     display: flex;
-    flex-direction: column;
+    width: 100%;
     align-items: center;
+    gap: 0.5rem;
+    border-radius: 0.5rem;
+
+    &:hover {
+      cursor: pointer;
+      background-color: ${({ theme }) => theme.light_gray};
+    }
+  `,
+  Infos: styled.span`
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    border-bottom: 1px solid black;
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
+  `,
+  UserMenu: styled.span`
+    display: flex;
+    flex-direction: column;
+    padding: 0.5rem 1rem;
+    min-width: 15rem;
+    justify-content: space-between;
   `,
   WrapperUser: styled.div`
     display: flex;
@@ -84,6 +106,7 @@ export const Sidebar = {
     width: 2.5rem;
     border-radius: 50%;
     background-color: ${({ theme }) => theme.light_gray};
+    cursor: pointer;
   `,
 };
 

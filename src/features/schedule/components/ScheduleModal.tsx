@@ -9,6 +9,7 @@ import { Button } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { useNavigate } from 'react-router-dom';
 
 const ScheduleModal: React.FC<{
   setOpen: StateAction<boolean>;
@@ -16,6 +17,8 @@ const ScheduleModal: React.FC<{
   currentEvent: EventProps;
 }> = ({ setOpen, open, currentEvent }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+
   return (
     <Modal
       open={open}
@@ -43,14 +46,14 @@ const ScheduleModal: React.FC<{
       >
         <S.Header $backgrounColor={currentEvent?.color ?? Themes.primary}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            {currentEvent?.title}
+            {currentEvent?.name}
           </Typography>
         </S.Header>
         <S.Content>
           <span>
             <S.field>
               <Typography fontWeight={700}>{t('schedule.TEACHER')}</Typography>
-              <Typography>{currentEvent?.teacher}</Typography>
+              <Typography>{currentEvent?.teacherName}</Typography>
             </S.field>
             <S.field>
               <Typography fontWeight={700}>{t('schedule.TIME')}</Typography>
@@ -66,6 +69,11 @@ const ScheduleModal: React.FC<{
             style={{ borderRadius: '1.5rem', width: 'auto' }}
             size="small"
             variant="contained"
+            onClick={() =>
+              navigate(`../disciplina/${currentEvent.id?.split('-')[0]}`, {
+                relative: 'path',
+              })
+            }
           >
             {t('schedule.CLASS_DETAILS')}
           </Button>

@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { Themes } from './../shared/Shared.consts';
+import { ToastError } from '../shared/Shared.style';
 
 export const ScheduledTable = {
   Content: styled.div`
@@ -33,7 +34,14 @@ export const Modal = {
 export const CalendarContainer = styled.span`
   height: 100%;
   width: 100%;
-  padding: 0 1rem 1rem 0;
+  padding: 0 1rem 0 0;
+
+  .rbc-event {
+    position: relative;
+  }
+  .rbc-events-container {
+    margin-right: 0 !important;
+  }
 
   tr {
     .rbc-header {
@@ -76,17 +84,21 @@ export const CalendarContainer = styled.span`
   .rbc-event-label {
     margin-bottom: 0.2rem;
   }
+
+  .rbc-allday-cell {
+    display: none;
+  }
 `;
 
 export const DisciplinesStyled = {
   Container: styled.span`
     display: flex;
-    width: 25%;
     flex-direction: column;
     margin: 1rem 1rem 1rem 0;
     background-color: white;
     border-radius: 1.5rem;
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 1rem 1rem 1rem;
+    overflow: hidden;
   `,
 };
 
@@ -103,25 +115,28 @@ export const EventItem = styled.div`
 `;
 
 export const EventItemContent = styled.div`
-  width: 100%;
-
+  width: 90%;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 `;
 
 export const RemoveEventButton = styled.button`
   display: flex;
+  position: absolute;
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0;
+  padding: 0.1rem;
+  right: 0;
+  top: 0;
 `;
 
 export const DisciplineList = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
+  overflow-y: auto;
+  padding-right: 0.5rem;
 `;
 
 export const ModalTimeDiscipline = styled.input`
@@ -130,4 +145,23 @@ export const ModalTimeDiscipline = styled.input`
   &:focus-visible {
     outline: none;
   }
+`;
+
+export const ScheduledContent = styled.div<{ $isTeacher: boolean }>`
+  display: ${({ $isTeacher }) => ($isTeacher ? 'flex' : 'grid')};
+  grid-template-columns: minmax(0, 1fr) 0.3fr;
+  flex: 1;
+  max-height: 100%;
+  grid-auto-rows: 1fr;
+  column-gap: 2rem;
+`;
+
+export const DisciplineListHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding-right: 0.5rem;
+`;
+
+export const ToastWarning = styled(ToastError)`
+  background-color: ${({ theme }) => theme.warning};
 `;

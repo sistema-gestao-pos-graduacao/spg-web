@@ -1,7 +1,7 @@
 import React from 'react';
 import { Folder as S } from '../Disciplines.style';
 import { Typography } from '@mui/material';
-import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 
 export const generateColor = () => {
   const minIntensity = 0;
@@ -14,36 +14,22 @@ export const generateColor = () => {
 };
 const Folder: React.FC<{
   discipline: {
-    discipline: string;
-    activesClasses: number;
-    period: number;
+    name: string;
+    id: number;
   };
 }> = ({ discipline }) => {
-  const { t } = useTranslation();
   const color = generateColor();
 
   return (
-    <S.Container>
-      <S.Left $cardColor={color} />
-      <S.Upper $cardColor={color} />
-      <S.Content $cardColor={color}>
-        <Typography>{discipline.discipline}</Typography>
-        <span>
-          <S.fieldText>
-            <Typography fontSize=".6rem">
-              {t('disciplines.ACTIVES_CLASSES')}
-            </Typography>
-            <Typography fontSize=".6rem">
-              {discipline.activesClasses}
-            </Typography>
-          </S.fieldText>
-          <S.fieldText>
-            <Typography fontSize=".6rem">{t('disciplines.PERIOD')}</Typography>
-            <Typography fontSize=".6rem">{discipline.period}º</Typography>
-          </S.fieldText>
-        </span>
-      </S.Content>
-    </S.Container>
+    <Link to={String(discipline.id)}>
+      <S.Container>
+        <S.Left $cardColor={color} />
+        <S.Upper $cardColor={color} />
+        <S.Content $cardColor={color}>
+          <Typography>{discipline.name}</Typography>
+        </S.Content>
+      </S.Container>
+    </Link>
   );
 };
 
