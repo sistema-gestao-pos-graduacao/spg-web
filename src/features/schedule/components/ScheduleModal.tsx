@@ -57,12 +57,16 @@ const ScheduleModal: React.FC<{
             </S.field>
             <S.field>
               <Typography fontWeight={700}>{t('schedule.TIME')}</Typography>
-              <Typography sx={{ textTransform: 'capitalize' }}>
-                {`${format(currentEvent?.start || new Date(), 'EEEE', { locale: ptBR })}
+              {currentEvent.start ? (
+                <Typography sx={{ textTransform: 'capitalize' }}>
+                  {`${format(currentEvent?.start || new Date(), 'EEEE', { locale: ptBR })}
                  (${format(currentEvent?.start || new Date(), 'HH:mm')}
                  - ${format(currentEvent?.end || new Date(), 'HH:mm')})
                  `}
-              </Typography>
+                </Typography>
+              ) : (
+                t('schedule.UNALLOCATED')
+              )}
             </S.field>
           </span>
           <Button

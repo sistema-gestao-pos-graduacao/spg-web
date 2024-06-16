@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { MainScreen } from '../../shared/Shared.style';
 import Folder from './Folder';
 import { Typography } from '@mui/material';
@@ -29,10 +29,13 @@ const Disciplines: React.FC = () => {
   const { data: classData, isLoading: classLoading } = useApi<
     ClassResponseProps[]
   >(
-    filteredClasses.length === 0
-      ? CLASSES_ROUTE
-      : `${CLASSES_ROUTE}?id=list(${filteredClasses.join()})`,
+    filteredClasses.length === 0 ? CLASSES_ROUTE : `${CLASSES_ROUTE}`,
     HttpMethods.GET,
+    true,
+    {},
+    {
+      id: filteredClasses.length > 0 ? `list(${filteredClasses.join()})` : null,
+    },
   );
   const classScreen = pathname === '/';
 
@@ -42,35 +45,27 @@ const Disciplines: React.FC = () => {
         ?.curriculumId;
   }, [pathname, classData]);
 
-  const query = useMemo(() => {
-    const subjectFilter =
-      filteredSubjects.length > 0 ? `id=list(${filteredSubjects.join()})` : '';
-
-    const teacherFilter =
-      filteredTeacher.length > 0
-        ? `teacherId=list(${filteredTeacher.join()})`
-        : visionMode === Roles.TEACHER && userLogged
-          ? `teacherId=${userLogged.personId}`
-          : '';
-
-    const filters = [subjectFilter, teacherFilter].filter(Boolean).join('&');
-    const queryParams = filters ? `&${filters}` : '';
-
-    return `${SUBJECTS_ROUTE}?curriculumId=${curriculumId}${queryParams}`;
-  }, [
-    filteredSubjects,
-    filteredTeacher,
-    filteredClasses,
-    userLogged,
-    visionMode,
-    curriculumId,
-  ]);
-
   const { data: disciplinesData, isLoading } = useApi<SubjectsResponseProps[]>(
-    query,
+    SUBJECTS_ROUTE,
     HttpMethods.GET,
     !!curriculumId,
+    {},
+    {
+      curriculumId,
+      id:
+        filteredSubjects.length > 0 ? `list(${filteredSubjects.join()})` : null,
+      teacherId:
+        visionMode === Roles.TEACHER
+          ? userLogged?.personId
+          : filteredTeacher.length > 0
+            ? `list(${filteredTeacher.join()})`
+            : null,
+    },
   );
+  useEffect(() => {
+    const selectClass = Number(pathname.split('/')[1]);
+    setFilteredClasses(selectClass ? [selectClass] : []);
+  }, [pathname]);
 
   const getContentDiscipline = () => {
     if (isLoading) {

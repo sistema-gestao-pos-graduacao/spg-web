@@ -8,8 +8,9 @@ const PtBr = {
   DISCIPLINES: 'Disciplina',
   CLASS: 'Aulas',
   WARNING_CLASS_SCHEDULE:
-    'Uma ou mais aulas estão agendadas fora do horário disponível do professor.',
+    'Aula agendada fora do horário disponível do professor.',
   SELECT_CLASS: 'Por favor, selecione uma turma.',
+  UNALLOCATED: 'Nenhum horário definido.',
 };
 
 export default PtBr;

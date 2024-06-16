@@ -1,8 +1,10 @@
-import React, { DragEvent } from 'react';
+import React, { DragEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { ManualEventsProps } from '../Schedule.types';
 import 'moment/locale/pt-br';
+import { EventProps } from '../Schedule.types';
+
 import { StateAction } from '../../shared/Shared.types';
 import {
   DisciplineList,
@@ -14,6 +16,7 @@ import {
 import { MainScreen } from '../../shared/Shared.style';
 import { Skeleton, Typography } from '@mui/material';
 import { Themes } from '../../shared/Shared.consts';
+import ScheduleModal from './ScheduleModal';
 
 const Disciplines: React.FC<{
   manualEvents: ManualEventsProps[];
@@ -23,11 +26,13 @@ const Disciplines: React.FC<{
 }> = ({ manualEvents, setExternalEvents, isLoading }) => {
   const { t } = useTranslation();
 
+  const [openModal, setOpenModal] = useState<boolean>(false);
+  const [currentEvent, setCurrentEvent] = useState<EventProps | null>(null);
+
   const SelectExternalEvent = (event: DragEvent<HTMLDivElement>) => {
     const customProp = event.currentTarget.dataset.event;
     setExternalEvents(JSON.parse(customProp as string));
   };
-
   return (
     <S.Container>
       <MainScreen.Title style={{ minHeight: '2.5rem' }}>
@@ -57,6 +62,16 @@ const Disciplines: React.FC<{
               key={events.id}
               data-event={JSON.stringify(events)}
               onDragStart={SelectExternalEvent}
+              onDragEnd={() => setExternalEvents(null)}
+              onClick={() => {
+                setCurrentEvent({
+                  id: events.id.toString(),
+                  name: events.name,
+                  teacherName: events.teacherName,
+                  color: events.color,
+                });
+                setOpenModal(true);
+              }}
               draggable
               style={{
                 backgroundColor: events.color,
@@ -82,6 +97,13 @@ const Disciplines: React.FC<{
             </EventItem>
           ))}
         </DisciplineList>
+      )}
+      {currentEvent && (
+        <ScheduleModal
+          open={openModal}
+          setOpen={setOpenModal}
+          currentEvent={currentEvent}
+        />
       )}
     </S.Container>
   );
