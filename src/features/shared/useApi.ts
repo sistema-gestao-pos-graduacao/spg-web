@@ -10,6 +10,7 @@ const useApi = <T>(
   method: 'POST' | 'GET' | 'PUT' | 'DELETE',
   enabled: boolean = true,
   body?: any,
+  params?: any,
 ) => {
   const { setApiError } = useContext(GlobalContext);
   const { t } = useTranslation();
@@ -21,6 +22,7 @@ const useApi = <T>(
         headers: { 'Content-Type': 'application/json' },
         withCredentials: true,
         data: body,
+        params,
         timeout: 3e4,
         timeoutErrorMessage: t('shared.TIMEOUT_MESSAGE'),
       });
@@ -43,7 +45,7 @@ const useApi = <T>(
   };
 
   const { data, isLoading, isError, refetch, remove, isSuccess, isFetching } =
-    useQuery<T>([`${route}-${method}`, {}], fetchData, {
+    useQuery<T>([`${route}-${method}`, { params }], fetchData, {
       enabled,
       retry: false,
       cacheTime: route === LOGIN_ROUTE || route === CONTEXT_ROUTE ? 0 : 3e5,

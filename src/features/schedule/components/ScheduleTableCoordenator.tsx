@@ -53,20 +53,19 @@ const ScheduleTableCoordenator: React.FC<ScheduleTableCoordenatorProps> = ({
   setManualEvents,
   externalEvents,
   setExternalEvents,
-  filteredTeacher,
 }) => {
   const { t } = useTranslation();
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [currentEvent, setCurrentEvent] = useState<EventProps | null>(null);
   const [currentView, setCurrentView] = useState<string>('month');
-  const [currentDay, setCurrentDay] = useState<Date>();
   const [warningView, setWarningView] = useState<boolean>(false);
-  const [mantainedToast, setMantainedToast] = useState<boolean>(false);
+  const [click, setClick] = useState<boolean>(false);
+  const [timer, setTimer] = useState<number>(0);
 
   const { data: availableData } = useApi<AvailableResponseProps[]>(
-    `${TEACHER_ROUTE}?teacherId=${filteredTeacher[0]}`,
+    `${TEACHER_ROUTE}?teacherId=${externalEvents?.teacherId}`,
     HttpMethods.GET,
-    filteredTeacher.length > 0,
+    !!externalEvents,
   );
 
   const checkIncludedDate = (date: Date) => {
@@ -107,6 +106,22 @@ const ScheduleTableCoordenator: React.FC<ScheduleTableCoordenatorProps> = ({
         end,
       },
     ]);
+    if (!!availableData?.length) {
+      const formatEndDate = (end: Date) => {
+        const endDate = new Date(end);
+        return new Date(endDate.setMinutes(end.getMinutes() - 10));
+      };
+
+      const showWarning =
+        currentView === 'month'
+          ? checkIncludedDateMonth(start as Date)
+          : checkIncludedDate(start as Date) &&
+            checkIncludedDate(formatEndDate(end as Date));
+
+      setWarningView(!showWarning);
+    }
+    setClick(false);
+    setExternalEvents(null);
   };
 
   const onDropFromOutsideEvent = (data: DragFromOutsideItemArgs) => {
@@ -149,10 +164,6 @@ const ScheduleTableCoordenator: React.FC<ScheduleTableCoordenatorProps> = ({
   };
 
   const CustomEventRow = ({ event }: { event: Event }) => {
-    const SelectEvent = (event: Event) => {
-      setCurrentEvent(event as EventProps);
-      setOpenModal(true);
-    };
     const removeEvent = (event: EventProps) => {
       const { id } = event;
       const index = manualEvents.findIndex(
@@ -164,16 +175,26 @@ const ScheduleTableCoordenator: React.FC<ScheduleTableCoordenatorProps> = ({
       setManualEvents(clone);
       setEvents((prev) => prev.filter(({ id: eventsId }) => eventsId !== id));
     };
-
-    const defaultStyle = { height: '1.2rem', width: '1.2rem' };
-
     return (
       <EventItem>
-        <EventItemContent onClick={() => SelectEvent(event)}>
+        <EventItemContent
+          onMouseUp={() => {
+            setClick(false);
+          }}
+          onMouseDown={(click) => {
+            setCurrentEvent(event as EventProps);
+            setTimer(0);
+            setClick(true);
+            click.isPropagationStopped();
+          }}
+        >
           {event.title}
         </EventItemContent>
         <RemoveEventButton onClick={() => removeEvent(event as EventProps)}>
-          <CloseIcon color="secondary" style={defaultStyle} />
+          <CloseIcon
+            color="secondary"
+            style={{ height: '1.2rem', width: '1.2rem' }}
+          />
         </RemoveEventButton>
       </EventItem>
     );
@@ -201,36 +222,22 @@ const ScheduleTableCoordenator: React.FC<ScheduleTableCoordenatorProps> = ({
   };
 
   useEffect(() => {
-    if (availableData && availableData.length > 0) {
-      const eventFilterDay = events.filter(
-        ({ start }) =>
-          new Date(start!).getMonth() === currentDay?.getMonth() &&
-          new Date(start!).getDate() === currentDay?.getDate(),
-      );
-
-      const formatEndDate = (end: Date) => {
-        const endDate = new Date(end);
-        return new Date(endDate.setMinutes(end.getMinutes() - 10));
-      };
-
-      const showWarning =
-        currentView === 'month'
-          ? !events?.every(({ start }) => checkIncludedDateMonth(start as Date))
-          : !eventFilterDay.every(({ start }) =>
-              checkIncludedDate(start as Date),
-            ) ||
-            !eventFilterDay.every(({ end }) =>
-              checkIncludedDate(formatEndDate(end as Date)),
-            );
-
-      if (showWarning) {
-        setWarningView(true);
-      } else {
-        setWarningView(false);
-        setMantainedToast(false);
+    if (click) {
+      setTimer((prev) => prev + 1);
+      if (timer > 15) {
+        setExternalEvents({ ...currentEvent, id: Number(currentEvent?.id) });
       }
+    } else {
+      if (timer !== 0 && timer <= 15) {
+        setOpenModal(true);
+      }
+      setExternalEvents(null);
     }
-  }, [events]);
+    if (openModal) {
+      setClick(false);
+      setTimer(0);
+    }
+  }, [click, timer, openModal]);
 
   return (
     <CalendarContainer>
@@ -240,6 +247,9 @@ const ScheduleTableCoordenator: React.FC<ScheduleTableCoordenatorProps> = ({
         defaultView={'month'}
         events={events}
         localizer={localizer}
+        onDragStart={({ event }) => {
+          if (currentView === 'day') setExternalEvents(event);
+        }}
         onEventDrop={onEventDrop}
         eventPropGetter={eventStyleGetter}
         resizable
@@ -255,7 +265,6 @@ const ScheduleTableCoordenator: React.FC<ScheduleTableCoordenatorProps> = ({
         min={StarDate}
         max={EndDate}
         onView={setCurrentView}
-        onNavigate={setCurrentDay}
       />
       {currentEvent && (
         <ScheduleModal
@@ -265,11 +274,10 @@ const ScheduleTableCoordenator: React.FC<ScheduleTableCoordenatorProps> = ({
         />
       )}
       <Snackbar
-        open={warningView && !mantainedToast}
+        open={warningView}
         autoHideDuration={3e3}
         onClose={() => {
           setWarningView(false);
-          setMantainedToast(true);
         }}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         TransitionComponent={Grow}

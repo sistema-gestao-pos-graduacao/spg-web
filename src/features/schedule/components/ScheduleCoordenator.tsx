@@ -1,6 +1,12 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { MainScreen } from '../../shared/Shared.style';
-import { Button, CircularProgress, Grid, Skeleton, Typography } from '@mui/material';
+import {
+  Button,
+  CircularProgress,
+  Grid,
+  Skeleton,
+  Typography,
+} from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { EventProps, ManualEventsProps } from '../Schedule.types';
 import Disciplines from './Disciplines';
@@ -29,85 +35,40 @@ const ScheduleCoordenator: React.FC = () => {
   const [filteredTeacher, setFilteredTeacher] = useState<number[]>([]);
   const [filteredSubjects, setFilteredSubjects] = useState<number[]>([]);
   const [filteredClasses, setFilteredClasses] = useState<number[]>([]);
-
   const [curriculumId, setCurriculumId] = useState<number[]>([]);
 
-  const queryFilterSubject = useCallback(
-    (route: string) => {
-      const hasFilters =
-        filteredSubjects.length > 0 ||
-        filteredTeacher.length > 0 ||
-        filteredClasses.length > 0;
-
-      let filters = '';
-
-      if (hasFilters) {
-        const subjectFilter =
-          filteredSubjects.length > 0
-            ? `id=list(${filteredSubjects.join()})`
-            : '';
-        const classesFilter =
-          curriculumId.length > 0
-            ? `curriculumId=list(${Array.from(new Set(curriculumId)).join()})`
-            : '';
-        const teacherFilter =
-          filteredTeacher.length > 0
-            ? `teacherId=list(${filteredTeacher.join()})`
-            : '';
-
-        filters = [subjectFilter, classesFilter, teacherFilter]
-          .filter(Boolean)
-          .join('&');
-      }
-
-      const queryParams = filters ? `?${filters}` : '';
-      return `${route}${queryParams}`;
-    },
-    [filteredSubjects, filteredTeacher, filteredClasses, curriculumId],
-  );
-  const queryFilterClass = useCallback(
-    (route: string) => {
-      const hasFilters =
-        filteredSubjects.length > 0 ||
-        filteredTeacher.length > 0 ||
-        filteredClasses.length > 0;
-
-      let filters = '';
-
-      if (hasFilters) {
-        const subjectFilter =
-          filteredSubjects.length > 0
-            ? `subjectId=list(${filteredSubjects.join()})`
-            : '';
-
-        const teacherFilter =
-          filteredTeacher.length > 0
-            ? `teacherId=list(${filteredTeacher.join()})`
-            : '';
-
-        filters = [subjectFilter, teacherFilter].filter(Boolean).join('&');
-      }
-
-      const queryParams = filters ? `?${filters}` : '';
-      return `${route}${queryParams}`;
-    },
-    [filteredSubjects, filteredTeacher, filteredClasses, curriculumId],
-  );
-
   const { data: disciplinesData, isLoading } = useApi<SubjectsResponseProps[]>(
-    queryFilterSubject(SUBJECTS_ROUTE),
+    SUBJECTS_ROUTE,
     HttpMethods.GET,
+    !!filteredClasses.length,
+    {},
+    {
+      id:
+        filteredSubjects.length > 0 ? `list(${filteredSubjects.join()})` : null,
+      curriculumId:
+        curriculumId.length > 0
+          ? `list(${Array.from(new Set(curriculumId)).join()})`
+          : null,
+      teacherId:
+        filteredTeacher.length > 0 ? `list(${filteredTeacher.join()})` : null,
+    },
   );
-
   const {
     data: scheduleGetData,
     isLoading: scheduleGetLoading,
     refetch: scheduleGetRefetch,
   } = useApi<ScheduleResponseProps[]>(
-    queryFilterClass(
-      `${SCHEDULE_ROUTE}/filteredByClass/${filteredClasses[0] ?? 0}`,
-    ),
+    `${SCHEDULE_ROUTE}/filteredByClass/${filteredClasses[0] ?? 0}`,
     HttpMethods.GET,
+    !!filteredClasses.length,
+    {},
+    {
+      subjectId:
+        filteredSubjects.length > 0 ? `list(${filteredSubjects.join()})` : null,
+
+      teacherId:
+        filteredTeacher.length > 0 ? `list(${filteredTeacher.join()})` : null,
+    },
   );
 
   const deleteItems = useMemo(
@@ -125,7 +86,7 @@ const ScheduleCoordenator: React.FC = () => {
             ),
         )
         .map(({ id }) => id),
-    [events],
+    [events, scheduleGetData],
   );
 
   const { isLoading: deleteLoading, refetch: deleteRefetch } = useApi(
@@ -134,7 +95,6 @@ const ScheduleCoordenator: React.FC = () => {
     false,
     deleteItems,
   );
-
   const saveItems = useMemo(
     () =>
       events
@@ -156,7 +116,7 @@ const ScheduleCoordenator: React.FC = () => {
           color: event.color,
           relatedClassesIds: filteredClasses,
         })),
-    [events],
+    [events, scheduleGetData],
   );
 
   const { isLoading: scheduleLoading, refetch: scheduleRefetch } = useApi(
@@ -176,32 +136,41 @@ const ScheduleCoordenator: React.FC = () => {
     filteredSubjects,
     filteredTeacher,
     filteredClasses,
+    scheduleGetRefetch,
   ]);
 
   const scheduledItems = useMemo(
     () =>
-      scheduleGetData?.map((item) => {
-        const referenceItem = disciplinesData?.find(
-          ({ id }) => id === item.subjectId,
-        )!;
+      (
+        scheduleGetData?.map((item) => {
+          const referenceItem = disciplinesData?.find(
+            ({ id }) => id === item.subjectId,
+          );
 
-        return {
-          ...referenceItem,
-          title: item.subjectName,
-          id: `${referenceItem.id}-${Math.random()}-${item.id}`,
-          start: new Date(item.startDateTime),
-          end: new Date(item.endDateTime),
-        };
-      }) ?? [],
+          if (!referenceItem) {
+            return null;
+          }
+
+          return {
+            ...referenceItem,
+            title: item.subjectName,
+            id: `${referenceItem.id}-${Math.random()}-${item.id}`,
+            start: new Date(item.startDateTime),
+            end: new Date(item.endDateTime),
+          };
+        }) ?? []
+      ).filter(Boolean),
     [scheduleGetData, disciplinesData],
   );
-
   useEffect(() => {
     setManualEvents(
       disciplinesData?.map((events) => {
-        const count = scheduledItems.filter(
-          ({ id }) => Number(id.split('-')[0]) === events.id,
-        ).length;
+        const count =
+          scheduledItems.length > 0
+            ? scheduledItems.filter(
+                (item) => Number(item?.id.split('-')[0]) === events.id,
+              ).length
+            : 0;
         return {
           ...events,
           classNumber: events.numberOfClasses - count,
@@ -209,11 +178,11 @@ const ScheduleCoordenator: React.FC = () => {
         };
       }) ?? [],
     );
-  }, [scheduledItems]);
+  }, [scheduledItems, disciplinesData]);
 
   useEffect(() => {
-    setEvents(scheduledItems);
-  }, [scheduleGetData]);
+    setEvents(scheduledItems as EventProps[]);
+  }, [scheduleGetData, scheduledItems]);
 
   const saveHandler = () => {
     if (saveItems.length > 0) scheduleRefetch();
@@ -230,7 +199,11 @@ const ScheduleCoordenator: React.FC = () => {
           <Grid style={{ display: 'flex' }}>
             <ExportToPDF scheduleData={scheduleGetData ?? []} />
             <Button
-              style={{ borderRadius: '1.5rem', gap: '.5rem', marginLeft: '.5rem' }}
+              style={{
+                borderRadius: '1.5rem',
+                gap: '.5rem',
+                marginLeft: '.5rem',
+              }}
               size="small"
               variant="contained"
               onClick={saveHandler}
@@ -271,7 +244,6 @@ const ScheduleCoordenator: React.FC = () => {
                 setManualEvents={setManualEvents}
                 externalEvents={externalEvents}
                 setExternalEvents={setExternalEvents}
-                filteredTeacher={filteredTeacher}
               />
             )}
           </MainScreen.Content>

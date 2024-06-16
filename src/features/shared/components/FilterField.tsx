@@ -1,4 +1,5 @@
 import {
+  CircularProgress,
   FormControl,
   InputLabel,
   MenuItem,
@@ -18,6 +19,8 @@ import { HttpMethods, Roles } from '../Shared.consts';
 import { CLASSES_ROUTE, PERSONS_ROUTE, SUBJECTS_ROUTE } from '../RoutesURL';
 import { useTranslation } from 'react-i18next';
 import { GlobalContext } from '../Context';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 
 const FilterField: React.FC<{
   filteredSubjects: number[];
@@ -49,7 +52,7 @@ const FilterField: React.FC<{
 
   const { data: personData, isLoading: personLoading } = useApi<
     PersonResponseProps[]
-  >(`${PERSONS_ROUTE}?personType=Teacher`, HttpMethods.GET);
+  >(`${PERSONS_ROUTE}`, HttpMethods.GET, true, {}, { personType: 'Teacher' });
 
   const curriculumList = useMemo(() => {
     return classData
@@ -60,28 +63,61 @@ const FilterField: React.FC<{
   const { data: disciplineData, isLoading: disciplineLoading } = useApi<
     SubjectsResponseProps[]
   >(
-    visionMode === Roles.TEACHER
-      ? `${SUBJECTS_ROUTE}?teacherId=${userLogged?.personId}`
-      : `${SUBJECTS_ROUTE}${curriculumList && curriculumList.length > 0 ? `?curriculumId=list(${curriculumList.join()})` : ''}${
-          filteredTeacher.length > 0
-            ? `&teacherId=list(${filteredTeacher.join()})`
-            : ''
-        }`,
+    SUBJECTS_ROUTE,
     HttpMethods.GET,
+    curriculumList && curriculumList.length > 0,
+    {},
+    visionMode === Roles.TEACHER
+      ? {
+          teacherId: userLogged?.personId,
+        }
+      : {
+          curriculumId:
+            curriculumList && curriculumList.length > 0
+              ? `list(${curriculumList.join()})`
+              : null,
+          teacherId:
+            filteredTeacher.length > 0
+              ? `list(${filteredTeacher.join()})`
+              : null,
+        },
   );
 
   useEffect(() => {
     if (curriculumList && setCurriculumId) setCurriculumId(curriculumList);
   }, [curriculumList]);
 
+  const getSelectIcon = (loading: boolean, open: boolean) =>
+    loading ? (
+      <CircularProgress
+        size={'1.2rem'}
+        sx={{ margin: '0 1rem 0 0', color: 'rgba(0, 0, 0, 0.54)' }}
+      />
+    ) : open ? (
+      <ArrowDropUpIcon
+        sx={{
+          margin: '.3rem 1rem 0 0',
+          color: 'rgba(0, 0, 0, 0.54)',
+        }}
+      />
+    ) : (
+      <ArrowDropDownIcon
+        sx={{
+          margin: '.3rem 1rem 0 0',
+          color: 'rgba(0, 0, 0, 0.54)',
+        }}
+      />
+    );
+
   return (
-    <div style={{ display: 'flex', gap: '1rem', margin: '.5rem 0' }}>
+    <div
+      style={{ display: 'flex', gap: '1rem', margin: '.5rem 0', width: '100%' }}
+    >
       {classScreen && (
-        <FormControl>
+        <FormControl sx={{ flex: '1', maxWidth: '20rem' }}>
           <InputLabel size={'small'}>{t('shared.CLASSES')}</InputLabel>
           <Select
             label={t('shared.CLASSES')}
-            sx={{ width: '20rem' }}
             MenuProps={{ PaperProps: { sx: { maxHeight: '15rem' } } }}
             onChange={(e: SelectChangeEvent<number[]>) => {
               setFilteredClasses(e.target.value as number[]);
@@ -100,6 +136,12 @@ const FilterField: React.FC<{
             size={'small'}
             multiple={!scheduleScreen}
             value={filteredClasses}
+            IconComponent={({ className }) =>
+              getSelectIcon(
+                classLoading,
+                className.split('-').includes('iconOpen'),
+              )
+            }
           >
             {classData?.map(({ id, name }) => (
               <MenuItem key={id} value={id}>
@@ -111,11 +153,10 @@ const FilterField: React.FC<{
       )}
 
       {(!classScreen || (scheduleScreen && filteredClasses.length > 0)) && (
-        <FormControl>
+        <FormControl sx={{ flex: '1', maxWidth: '20rem' }}>
           <InputLabel size={'small'}>{t('shared.SUBJECTS')}</InputLabel>
           <Select
             label={t('shared.SUBJECTS')}
-            sx={{ width: '20rem' }}
             MenuProps={{ PaperProps: { sx: { maxHeight: '15rem' } } }}
             onChange={(e: SelectChangeEvent<number[]>) =>
               setFilteredSubjects(e.target.value as number[])
@@ -124,6 +165,12 @@ const FilterField: React.FC<{
             size={'small'}
             multiple
             value={filteredSubjects}
+            IconComponent={({ className }) =>
+              getSelectIcon(
+                disciplineLoading,
+                className.split('-').includes('iconOpen'),
+              )
+            }
           >
             {disciplineData?.map(({ id, name }) => (
               <MenuItem key={id} value={id}>
@@ -136,11 +183,10 @@ const FilterField: React.FC<{
 
       {visionMode !== Roles.TEACHER &&
         (!classScreen || (scheduleScreen && filteredClasses.length > 0)) && (
-          <FormControl>
+          <FormControl sx={{ flex: '1', maxWidth: '20rem' }}>
             <InputLabel size={'small'}>{t('shared.TEACHERS')}</InputLabel>
             <Select
               label={t('shared.TEACHERS')}
-              sx={{ width: '20rem' }}
               MenuProps={{ PaperProps: { sx: { maxHeight: '15rem' } } }}
               onChange={(e: SelectChangeEvent<number[]>) => {
                 if (scheduleScreen)
@@ -156,6 +202,12 @@ const FilterField: React.FC<{
               size={'small'}
               multiple={!scheduleScreen}
               value={filteredTeacher}
+              IconComponent={({ className }) =>
+                getSelectIcon(
+                  personLoading,
+                  className.split('-').includes('iconOpen'),
+                )
+              }
             >
               {personData?.map(({ id, name }) => (
                 <MenuItem key={id} value={id}>
