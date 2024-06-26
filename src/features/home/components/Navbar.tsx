@@ -3,6 +3,8 @@ import { Navbar as S } from '../Home.style';
 import Logo from '../../shared/components/Logo';
 import RedirectMenu from '../../shared/components/RedirectMenu';
 import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
+import SettingsIcon from '@mui/icons-material/Settings';
+import { Link } from 'react-router-dom';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import { useTranslation } from 'react-i18next';
 import {
@@ -16,7 +18,7 @@ import {
   CURRICULUM_ROUTE,
   LOGOUT_ROUTE,
 } from '../../shared/RoutesURL';
-import { HttpMethods } from '../../shared/Shared.consts';
+import { HttpMethods, Roles } from '../../shared/Shared.consts';
 import { CurriculomResponseProps } from '../../registers/Registers.types';
 import { GlobalContext } from '../../shared/Context';
 
@@ -24,7 +26,7 @@ const Navbar: React.FC<{ setLogged: StateAction<boolean> }> = ({
   setLogged,
 }) => {
   const { t } = useTranslation();
-  const { setUserLogged } = useContext<ContextProps>(GlobalContext);
+  const { setUserLogged, visionMode } = useContext<ContextProps>(GlobalContext);
 
   const { refetch } = useApi(LOGOUT_ROUTE, HttpMethods.POST, false);
 
@@ -65,7 +67,15 @@ const Navbar: React.FC<{ setLogged: StateAction<boolean> }> = ({
         <RedirectMenu label={t('home.CONTACT')} listItems={[]} isLoading />
       </S.Menu>
       <S.User>
-        <NotificationsOutlinedIcon fontSize="small" />
+        <span style={{ cursor: 'pointer' }}>
+          <NotificationsOutlinedIcon fontSize="small" />
+        </span>
+
+        {visionMode != Roles.TEACHER && (
+          <Link to="/configuracoes">
+            <SettingsIcon fontSize="small" />
+          </Link>
+        )}
         <span
           onClick={() => {
             setLogged(false);
