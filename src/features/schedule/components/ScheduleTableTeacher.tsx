@@ -16,7 +16,6 @@ import {
   EventItemContent,
   RemoveEventButton,
 } from '../Schedule.style';
-import moment from 'moment';
 import 'moment/locale/pt-br';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
