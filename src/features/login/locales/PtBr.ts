@@ -1,5 +1,5 @@
 const PtBr = {
-  TITLE: 'Bem Vindo ao SPG',
+  TITLE: 'Bem Vindo ao SGP',
   SUBTITLE: 'Entre com seu usuário e senha.',
   TERMS: 'Ao fazer login, você concordo com nossos Termos & Condições',
   LOGINBUTTON: 'Login',

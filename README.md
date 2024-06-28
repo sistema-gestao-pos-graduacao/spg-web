@@ -1,4 +1,4 @@
-# SPG-WEB
+# SGP-WEB
 
 ![React](https://img.shields.io/badge/-react-black?style=for-the-badge&logoColor=black&logo=react&color=61DAFB)
 ![TypeScript](https://img.shields.io/badge/-typescript-black?style=for-the-badge&logoColor=white&logo=typescript&color=3178C6)
@@ -17,7 +17,7 @@
 
 ## <a name="main-structure"> 🚀 What is this app ?</a>
 
-**Spg-web** is a web app developed to perform as the primary frontend structure for the SPG TCC project.
+**Sgp-web** is a web app developed to perform as the primary frontend structure for the SGP TCC project.
 
 ## <a name="main-structure">✨ Main Structure</a>
 
