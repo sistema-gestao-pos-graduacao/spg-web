@@ -120,7 +120,7 @@ const ScheduleTableTeacher: React.FC<ScheduleTableProps> = ({
   return (
     <CalendarContainer>
       <DnDCalendar
-        defaultDate={moment().toDate()}
+        defaultDate={new Date(2024, 5, 17)}
         messages={CalendarTranlates}
         defaultView={'week'}
         events={events}
